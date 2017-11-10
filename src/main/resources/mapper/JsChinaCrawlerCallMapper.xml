@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hb.crawler.dao.JsChinaCrawlerCallMapper">
+
+    <resultMap id="jsChinaCrawlerCall" type="com.hb.crawler.pojo.JsChinaCrawlerCall"/>
+    <resultMap id="jsChinaCrawlerSMS" type="com.hb.crawler.pojo.JsChinaCrawlerSMS"/>
+    <resultMap id="jsChinaCrawlerNet" type="com.hb.crawler.pojo.JsChinaCrawlerNet"/>
+
+    <insert id="addJsChinaCrawlerCallBatch" parameterType="java.util.List"  >
+        insert into crawler_js_china_call
+        (instance_id, mobile, call_duration,summary_call_type,call_type,
+        status_type,pkg_code,high_definition,other_party,roam_type,
+        start_time, total_fee,user_mobile,visit_arear)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+        ( #{item.instanceId},#{item.mobile},#{item.callDuration},#{item.summaryCallType},#{item.callType},
+            #{item.statusType},#{item.pkgCode},#{item.highDefinition},#{item.otherParty},#{item.roamType},
+         #{item.startTime},#{item.totalFee},#{item.userMobile},#{item.visitArear} )
+        </foreach>
+    </insert>
+
+
+    <insert id="addJsChinaCrawlerSMSBatch" parameterType="java.util.List" >
+        INSERT INTO crawler_js_china_sms(
+        instance_id,
+        mobile,
+        start_time,
+        visit_arear,
+        statusType,
+        info_len,
+        total_fee,
+        other_party,
+        user_mobile
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            ( #{item.instanceId},#{item.mobile}, #{item.startTime},#{item.visitArear},
+            #{item.statusType},#{item.infoLen},#{item.totalFee},#{item.otherParty},#{item.userMobile} )
+        </foreach>
+    </insert>
+
+    <insert id="addJsChinaCrawlerNetBatch" parameterType="java.util.List" >
+        INSERT INTO crawler_js_china_net(
+        instance_id,
+        mobile,
+        start_time,
+        cdr_apnni,
+        duration,
+        busy_data,
+        package_fee,
+        msnc,total_fee
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            ( #{item.instanceId},#{item.mobile}, #{item.startTime},#{item.cdrApnni},
+            #{item.duration},#{item.busyData},#{item.packageFee},#{item.msnc},#{item.totalFee} )
+        </foreach>
+
+    </insert>
+
+
+
+</mapper>

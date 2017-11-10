@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hb.crawler.dao.CrawlerInstanceMapper">
+
+    <resultMap id="jsCrawlerChinaMobileLog" type="com.hb.crawler.pojo.JsCrawlerChinaMobileLog">  </resultMap>
+
+    <select id="queryJsCrawlerChinaMobileLog" resultMap="jsCrawlerChinaMobileLog">
+        select *
+        from crawler_js_china_mobile_log
+        <where>
+            instance_id = #{instanceId}
+        </where>
+    </select>
+    <insert id="insertJsCrawlerChinaMobileLog">
+        insert into crawler_js_china_mobile_log(instance_id,mobile)
+        values( #{instanceId},#{mobile})
+    </insert>
+
+    <update id="updateCrawlerJsChinaMobileLog">
+        update crawler_js_china_mobile_log
+        <set>
+            <if test="mobile != null">
+                mobile = #{mobile},
+            </if>
+            <if test="accountBalance != null">
+                account_balance = #{accountBalance},
+            </if>
+            <if test="personalInfo != null">
+                personal_info = #{personalInfo},
+            </if>
+            <if test="monthBill != null">
+                month_bill = #{monthBill},
+            </if>
+
+            <if test="callLogOne != null">
+                call_log_one = #{callLogOne},
+            </if>
+            <if test="callLogTwo != null">
+                call_log_two = #{callLogTwo},
+            </if>
+            <if test="callLogThree != null">
+                call_log_three = #{callLogThree},
+            </if>
+            <if test="callLogFour != null">
+                call_log_four = #{callLogFour},
+            </if>
+            <if test="callLogFive != null">
+                call_log_five = #{callLogFive},
+            </if>
+            <if test="callLogSix != null">
+                call_log_six = #{callLogSix},
+            </if>
+            <if test="messageLogOne != null">
+                message_log_one = #{messageLogOne},
+            </if>
+            <if test="messageLogTwo != null">
+                message_log_two = #{messageLogTwo},
+            </if>
+            <if test="messageLogThree != null">
+                message_log_three = #{messageLogThree},
+            </if>
+            <if test="messageLogFour != null">
+                message_log_four = #{messageLogFour},
+            </if>
+            <if test="messageLogFive != null">
+                message_log_five = #{messageLogFive},
+            </if>
+            <if test="messageLogSix != null">
+                message_log_six = #{messageLogSix},
+            </if>
+            <if test="netLogOne != null">
+                net_log_one = #{netLogOne},
+            </if>
+            <if test="netLogTwo != null">
+                net_log_two = #{netLogTwo},
+            </if>
+            <if test="netLogThree != null">
+                net_log_three = #{netLogThree},
+            </if>
+            <if test="netLogFour != null">
+                net_log_four = #{netLogFour},
+            </if>
+            <if test="netLogFive != null">
+                net_log_five = #{netLogFive},
+            </if>
+            <if test="netLogSix != null">
+                net_log_six = #{netLogSix},
+            </if>
+
+            <if test="openedPackage != null">
+                opened_package = #{openedPackage},
+            </if>
+            <if test="openedBusiness != null">
+                opened_business = #{openedBusiness},
+            </if>
+            <if test="openedFunction != null">
+                opened_function = #{openedFunction},
+            </if>
+             update_times = update_times + 1,
+        </set>
+        where instance_id = #{instanceId}
+    </update>
+</mapper>
