@@ -477,6 +477,9 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         JsChinaCrawlerInstance jsChinaCrawlerInstanceNew = new JsChinaCrawlerInstance(instanceId,userName,firstEmergencyContact,secondEmergencyContact);
         jsChinaCrawlerInstanceNew.setStatus("4");
         jsChinaCrawlerInstanceMapper.updateJsChinaCrawlerInstance(jsChinaCrawlerInstanceNew);
+
+
+
     }
 
     /**
