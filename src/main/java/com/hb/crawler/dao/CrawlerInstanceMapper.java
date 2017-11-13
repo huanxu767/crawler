@@ -4,6 +4,8 @@ import com.hb.crawler.pojo.JsCrawlerChinaMobileLog;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Map;
+
 /**
  * 爬虫实例DAO
  */
@@ -32,4 +34,5 @@ public interface CrawlerInstanceMapper {
      * @return
      */
     JsCrawlerChinaMobileLog queryJsCrawlerChinaMobileLog(String instanceId);
+
 }

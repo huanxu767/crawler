@@ -21,7 +21,7 @@
 
 
     <insert id="addJsChinaCrawlerSMSBatch" parameterType="java.util.List" >
-        INSERT INTO crawler_js_china_sms(
+        insert into crawler_js_china_sms(
         instance_id,
         mobile,
         start_time,
@@ -40,7 +40,7 @@
     </insert>
 
     <insert id="addJsChinaCrawlerNetBatch" parameterType="java.util.List" >
-        INSERT INTO crawler_js_china_net(
+        insert into crawler_js_china_net(
         instance_id,
         mobile,
         start_time,
@@ -58,6 +58,28 @@
 
     </insert>
 
+    
+    <select id="queryLastConnectDay" resultType="Map" >
+        select * from
+        (
+            select instance_id,start_time,other_party from  crawler_js_china_call
+            union
+            select instance_id,start_time,other_party from  crawler_js_china_sms
+        ) a
+        where instance_id = #{instanceId} and other_party = #{mobile}
+        order by a.start_time desc
+        limit 1
+    </select>
 
+    <select id="countCallOtherParties" resultType="Long" >
+     select count(distinct other_party) other_parties from  crawler_js_china_call
+     where instance_id = #{instanceId}
+     AND summary_call_type = '主叫'
+    </select>
 
+    <select id="queryOnLineDays" resultType="String">
+        select start_time from crawler_js_china_mobile_on
+        where instance_id = #{instanceId}
+        order by start_time desc
+    </select>
 </mapper>

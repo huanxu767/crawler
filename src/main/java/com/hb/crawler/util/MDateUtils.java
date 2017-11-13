@@ -71,8 +71,18 @@ public class MDateUtils {
      * @return
      */
     public static String betweenDays(String day){
+        return betweenDays(day,"yyyyMMdd");
+    }
+
+    /**
+     * 指定日期离现在天数
+     * @param day
+     * @param parsePatterns
+     * @return
+     */
+    public static String betweenDays(String day,String parsePatterns){
         try {
-            Date date = DateUtils.parseDate(day,"yyyyMMdd");
+            Date date = DateUtils.parseDate(day,parsePatterns);
             Date now = new Date();
             int days = (int) ((now.getTime() - date.getTime()) / (1000*3600*24));
             return days+"";
@@ -81,7 +91,35 @@ public class MDateUtils {
         }
         return "";
     }
+
+    /**
+     * 日期减法
+     * @param beginDateStr
+     * @param endDateStr
+     * @return
+     */
+    public static int betweenDaysNum(String beginDateStr,String endDateStr){
+        try {
+            Date beginDate = DateUtils.parseDate(beginDateStr,"yyyy-MM-dd");
+            Date endDate = DateUtils.parseDate(endDateStr,"yyyy-MM-dd");
+            int days = (int) ((endDate.getTime() - beginDate.getTime()) / (1000*3600*24));
+            return days;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * 获取时间隔月份取年月
+     * @return
+     */
+    public static String getCurrentYearDays(int days){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+        return simpleDateFormat.format(DateUtils.addDays(new Date(),days));
+    }
+
     public static void main(String[] args) {
-        System.out.println(getLastSixMonth());
+        System.out.println(getCurrentYearDays(-60));
     }
 }
