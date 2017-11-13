@@ -19,6 +19,16 @@ public class JsBrowserInstance {
      */
     private WebClient webClient;
 
+    private boolean hasSendMsg = false;
+
+    public boolean isHasSendMsg() {
+        return hasSendMsg;
+    }
+
+    public void setHasSendMsg(boolean hasSendMsg) {
+        this.hasSendMsg = hasSendMsg;
+    }
+
     public String getInstanceId() {
         return instanceId;
     }

@@ -38,6 +38,7 @@ public class ReturnCode {
      */
     public static final String INSTANCE_ID_IS_NULL = "20002";
 
+
     /**
      * 已登录，请不要重复调用
      */
@@ -50,9 +51,9 @@ public class ReturnCode {
 
 
     /**
-     * 实例编号不存在或已失效
+     * 实例不存在
      */
-    public static final String INSTANCE_ID_IS_NULL_OR_EXPIRE = "20005";
+    public static final String INSTANCE_ID_EXPIRE = "20005";
 
     /**
      * 短信验证码重试次数超过3次
@@ -85,6 +86,11 @@ public class ReturnCode {
     public static final String NO_NEED_VERIFICATION_CODE = "20011";
 
     /**
+     * 实例不存在
+     */
+    public static final String INSTANCE_ID_ISNOT_EXSIT = "20012";
+
+    /**
      * 登录失败 错误描述由页面返回
      */
     public static final String LOGIN_FAILURE = "30000";
@@ -99,15 +105,17 @@ public class ReturnCode {
         codeMap.put(PARAMS_NOT_ENOUGH, "参数不全");
         codeMap.put(PARAMS_FORMAT_ERROR, "参数格式不正确");
         codeMap.put(USER_PWD_IS_NULL, "用户名密码不能为空");
-        codeMap.put(INSTANCE_ID_IS_NULL, "实例编号不能为空");
+        codeMap.put(INSTANCE_ID_IS_NULL, "实例不能为空");
         codeMap.put(HAS_LOGIN, "已登录，请不要重复调用");
         codeMap.put(VERIFICATION_CODE_IS_NULL, "验证码不能为空");
-        codeMap.put(INSTANCE_ID_IS_NULL_OR_EXPIRE, "实例编号不存在或已失效");
+        codeMap.put(INSTANCE_ID_EXPIRE, "实例已失效");
         codeMap.put(SMS_CODE_RETRY_TIMES_EXCEEDED, "短信验证码重试次数超过3次");
         codeMap.put(SMS_CODE_PERIOD, "距离上次短信验证码发送间隔30秒");
         codeMap.put(SMS_CODE_RETRY_TIMES_EXCEEDED_PERIOD, "短信验证码重试次数超过3次,并且距离上次短信验证码发送间隔30秒");
         codeMap.put(SMS_CODE_WRONG, "短信验证码验证不正确");
         codeMap.put(HAS_SMS_CODE_CHECKED, "短信码已验证");
+        codeMap.put(INSTANCE_ID_ISNOT_EXSIT, "实例不存在");
+
 
 
     }

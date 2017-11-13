@@ -1,6 +1,7 @@
 package com.hb.crawler.service;
 
 import com.hb.crawler.pojo.BaseResultBean;
+import com.hb.crawler.pojo.JsChinaCrawlerInstance;
 import com.hb.crawler.pojo.LoginForm;
 
 import java.util.Map;
@@ -55,4 +56,10 @@ public interface JsChinaMobileApiService {
      * @return
      */
     Map refreshVerificationCode(String instanceId);
+
+    /**
+     * 接受用户基本信息
+     * @param jsChinaCrawlerInstance
+     */
+    void addCustomerInformation(JsChinaCrawlerInstance jsChinaCrawlerInstance);
 }

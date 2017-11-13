@@ -49,6 +49,8 @@ public class JsCrawlerLoginThread implements Runnable {
     private void getDetail(WebClient webClient) {
         String phoneRemain = "";
         String js = "$('.font-pink1').html();";
+        String creditLevelFlagJs = "$('#popBox-verifyCode-idType').is(':visible');";
+        String creditLevelJs = "$('#popBox-verifyCode-idType').text();";
         JsCrawlerChinaMobileLog jsCrawlerChinaMobileLog = new JsCrawlerChinaMobileLog();
         try {
             jsCrawlerChinaMobileLog.setInstanceId(instanceId);
@@ -59,6 +61,15 @@ public class JsCrawlerLoginThread implements Runnable {
             if (!StringUtils.isEmpty(account)) {
                 phoneRemain = PattenUtils.getNumbers(account);
             }
+
+            ScriptResult creditFlagScriptResult = htmlPage.executeJavaScript(creditLevelFlagJs);
+            int creditLevel = 0;
+            if(Boolean.parseBoolean(creditFlagScriptResult.getJavaScriptResult().toString())){
+                ScriptResult creditScriptResult = htmlPage.executeJavaScript(creditLevelJs);
+                creditLevel = Integer.parseInt(PattenUtils.getNumbers(creditScriptResult.getJavaScriptResult().toString()));
+            }
+            jsCrawlerChinaMobileLog.setCreditLevel(creditLevel);
+
             // 取近个月花费金额
             TextPage monthBillTextPage = webClient.getPage(JsChinaMobileUrl.BILL_URL + MDateUtils.getLastMonthYearMonth());
             String monthBill = monthBillTextPage.getContent().toString();

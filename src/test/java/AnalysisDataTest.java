@@ -1,5 +1,4 @@
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.hb.crawler.dao.CrawlerInstanceMapper;
 import com.hb.crawler.dao.JsChinaCrawlerCallMapper;
 import com.hb.crawler.pojo.JsChinaCrawlerCall;
@@ -7,7 +6,6 @@ import com.hb.crawler.pojo.JsChinaCrawlerNet;
 import com.hb.crawler.pojo.JsChinaCrawlerSMS;
 import com.hb.crawler.pojo.JsCrawlerChinaMobileLog;
 import com.hb.crawler.util.MDateUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +36,7 @@ public class AnalysisDataTest {
         String instanceId = "f2a2af1bbbc0478a9f4de9c1ccd7c5b7";
         //紧急联系人
         String mobile = "18652090357";
+        String userName = "";
 //        JsCrawlerChinaMobileLog jsCrawlerChinaMobileLog = crawlerInstanceMapper.queryJsCrawlerChinaMobileLog(instanceId);
 //        //月账单
 //        billMonthBill(jsCrawlerChinaMobileLog);

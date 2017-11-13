@@ -2,6 +2,7 @@ package com.hb.crawler.controller;
 
 import com.hb.crawler.exception.ResultException;
 import com.hb.crawler.pojo.BaseResultBean;
+import com.hb.crawler.pojo.JsChinaCrawlerInstance;
 import com.hb.crawler.pojo.LoginForm;
 import com.hb.crawler.property.ConfigProperties;
 import com.hb.crawler.service.JsChinaMobileApiService;
@@ -138,6 +139,28 @@ public class JsChinaMobileApiController {
         } catch (Exception e) {
             bean.failure();
             logger.error("重新下发短信码", e);
+        }
+        return bean;
+    }
+
+
+    /**
+     * 接受用户填写基本信息
+     *
+     * @return
+     */
+    @RequestMapping(value = "/customerInformation")
+    public BaseResultBean customerInformation(JsChinaCrawlerInstance jsChinaCrawlerInstance) {
+        logger.info("接受用户填写基本信息", jsChinaCrawlerInstance);
+        BaseResultBean bean = new BaseResultBean();
+        try {
+            jsChinaMobileApiService.addCustomerInformation(jsChinaCrawlerInstance);
+            bean.success();
+        } catch (ResultException e) {
+            bean.failure(e);
+        } catch (Exception e) {
+            bean.failure();
+            logger.error("接受用户填写基本信息", e);
         }
         return bean;
     }

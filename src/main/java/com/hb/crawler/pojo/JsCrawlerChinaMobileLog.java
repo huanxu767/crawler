@@ -8,7 +8,7 @@ public class JsCrawlerChinaMobileLog {
     private String instanceId;
     private String mobile;
     private String accountBalance;
-
+    private Integer creditLevel;
     private String personalInfo;
     private String monthBill;
 
@@ -45,6 +45,8 @@ public class JsCrawlerChinaMobileLog {
     private int updateTimes;
     private Date createTime;
 
+
+
     public Long getId() {
         return id;
     }
@@ -75,6 +77,14 @@ public class JsCrawlerChinaMobileLog {
 
     public void setAccountBalance(String accountBalance) {
         this.accountBalance = accountBalance;
+    }
+
+    public Integer getCreditLevel() {
+        return creditLevel;
+    }
+
+    public void setCreditLevel(Integer creditLevel) {
+        this.creditLevel = creditLevel;
     }
 
     public String getPersonalInfo() {

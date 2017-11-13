@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hb.crawler.dao.JsChinaCrawlerInstanceMapper">
+
+    <resultMap id="jsChinaCrawlerInstance" type="com.hb.crawler.pojo.JsChinaCrawlerInstance"/>
+
+    <insert id="addJsChinaCrawlerInstance" parameterType="com.hb.crawler.pojo.JsChinaCrawlerInstance" >
+    insert into crawler_js_instance (
+      instance_id, mobile, need_verify_code, imei,user_name,
+      first_emergency_contact,second_emergency_contact,last_update_time,finish_time
+    )
+    values(
+        #{instanceId},#{mobile},#{needVerifyCode},#{imei},#{userName},
+        #{firstEmergencyContact},#{secondEmergencyContact},#{lastUpdateTime},#{finishTime}
+    )
+    </insert>
+
+
+    <select id="queryJsChinaCrawlerInstance" resultMap="jsChinaCrawlerInstance">
+        select * from crawler_js_instance
+        where instance_id = #{instanceId}
+    </select>
+
+    <update id="updateJsChinaCrawlerInstance" parameterType="com.hb.crawler.pojo.JsChinaCrawlerInstance" >
+        update crawler_js_instance
+        <set>
+            <if test="mobile != null">
+                mobile = #{mobile},
+            </if>
+            <if test="needVerifyCode != null">
+                need_verify_code = #{needVerifyCode},
+            </if>
+            <if test="imei != null">
+                imei = #{imei},
+            </if>
+            <if test="userName != null">
+                user_name = #{userName},
+            </if>
+            <if test="firstEmergencyContact != null">
+                first_emergency_contact = #{firstEmergencyContact},
+            </if>
+            <if test="secondEmergencyContact != null">
+                second_emergency_contact = #{secondEmergencyContact},
+            </if>
+            <if test="lastUpdateTime != null">
+                last_update_time = #{lastUpdateTime},
+            </if>
+            <if test="finishTime != null">
+                finish_time = #{finishTime},
+            </if>
+        </set>
+        where instance_id = #{instanceId}
+    </update>
+</mapper>

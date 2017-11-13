@@ -17,7 +17,7 @@ public class LoginForm {
     /**
      * 用户名
      */
-    private String userName;
+    private String mobile;
     /**
      * 密码
      */
@@ -35,12 +35,12 @@ public class LoginForm {
         this.instanceId = instanceId;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getMobile() {
+        return mobile;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
     }
 
     public String getPassword() {
@@ -72,7 +72,7 @@ public class LoginForm {
         return "LoginForm{" +
                 "instanceId='" + instanceId + '\'' +
                 ", imei='" + imei + '\'' +
-                ", userName='" + userName + '\'' +
+                ", mobile='" + mobile + '\'' +
                 ", password='" + password + '\'' +
                 ", verificationCode='" + verificationCode + '\'' +
                 '}';

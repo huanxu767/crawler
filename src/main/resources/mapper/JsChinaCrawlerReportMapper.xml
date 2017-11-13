@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hb.crawler.dao.JsChinaCrawlerReportMapper">
+
+    <resultMap id="jsChinaCrawlerReport" type="com.hb.crawler.pojo.JsChinaCrawlerReport"/>
+
+    <insert id="addJsChinaCrawlerReport">
+    insert into crawler_js_china_report (
+      id, instance_id,mobile,user_name,is_real_name,
+      month_average_payment,max_payment, standard_deviation,emergency_contact_days,total_contact,
+      is_group,join_group_days,online_days,credit_level,account_balance,
+      continuous_offline_days,offline_days_times)
+    values(
+        #{id},#{instanceId},#{mobile},#{userName},#{isRealName},
+        #{monthAveragePayment},#{maxPayment},#{standardDeviation},#{emergencyContactDays},#{totalContact},
+        #{isGroup},#{joinGroup_days},#{onlineDays},#{creditLevel},#{accountBalance},
+        #{continuousOfflineDays},#{offlineDaysTimes})
+    </insert>
+
+    <select id="queryJsChinaCrawlerReport" resultMap="jsChinaCrawlerReport">
+        select * from crawler_js_china_report
+        where instance_id = #{instanceId}
+        order by create_time desc
+        limit 1
+    </select>
+
+</mapper>

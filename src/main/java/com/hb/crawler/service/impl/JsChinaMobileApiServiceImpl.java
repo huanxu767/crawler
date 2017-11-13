@@ -4,11 +4,14 @@ import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.HtmlImage;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.hb.crawler.dao.CrawlerInstanceMapper;
+import com.hb.crawler.dao.JsChinaCrawlerInstanceMapper;
+import com.hb.crawler.dao.JsChinaCrawlerReportMapper;
 import com.hb.crawler.exception.ResultException;
 import com.hb.crawler.pojo.*;
 import com.hb.crawler.property.ConfigProperties;
 import com.hb.crawler.service.JsChinaMobileApiService;
 import com.hb.crawler.thread.JsCrawlerLoginThread;
+import com.hb.crawler.thread.JsCrawlerSMSThread;
 import com.hb.crawler.thread.JsCrawlerSMSVerifiedThread;
 import com.hb.crawler.util.*;
 import org.slf4j.Logger;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +37,11 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
     private ConfigProperties configProperties;
     @Autowired
     private CrawlerInstanceMapper crawlerInstanceMapper;
+
+    @Autowired
+    private JsChinaCrawlerInstanceMapper jsChinaCrawlerInstanceMapper;
+    @Autowired
+    private JsChinaCrawlerReportMapper jsChinaCrawlerReportMapper;
     @Autowired
     private RedisUtils redisUtils;
 
@@ -71,6 +80,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
 
     @Override
     public Map preLogin(String mobile, String imei) {
+
         Map resultMap;
         // 验证参数
         if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(imei)) {
@@ -90,6 +100,10 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
             JsBrowserCache.remove(cacheInstanceId);
         }
         String instanceId = RandomGenerator.generateInstanceId();
+
+        JsChinaCrawlerInstance jsChinaCrawlerInstance = new JsChinaCrawlerInstance(instanceId,mobile,imei);
+        jsChinaCrawlerInstanceMapper.addJsChinaCrawlerInstance(jsChinaCrawlerInstance);
+
         resultMap = preLoginProcess(mobile, imei, instanceId);
         resultMap.put("instanceId", instanceId);
         return resultMap;
@@ -115,7 +129,9 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
             resultMap.put("verificationCodeFlag", verificationCodeFlag);
             String path = "";
             jsBrowserInstance.setNeedVerifyCode(verificationCodeFlag);
+            JsChinaCrawlerInstance jsChinaCrawlerInstance = new JsChinaCrawlerInstance(instanceId);
             if (verificationCodeFlag) {
+                jsChinaCrawlerInstance.setNeedVerifyCode(JsChinaCrawlerInstance.NEED_VERIFY_CODE);
                 logger.debug(jsBrowserInstance.getInstanceId() + ":需要验证码");
                 //将验证码写入磁盘
                 path = RandomGenerator.timeId() + ".png";
@@ -123,8 +139,11 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
                 HtmlImage verificationCodeImg = (HtmlImage) loginPage.getElementById("vcimg");
                 FileUtils.downLoadImage(verificationCodeImg, verificationCodeURL);
             } else {
+                jsChinaCrawlerInstance.setNeedVerifyCode(JsChinaCrawlerInstance.NOT_NEED_VERIFY_CODE);
                 logger.debug(jsBrowserInstance.getInstanceId() + ":不需要需要验证码");
             }
+            jsChinaCrawlerInstanceMapper.updateJsChinaCrawlerInstance(jsChinaCrawlerInstance);
+
             resultMap.put("verificationCodeURL", path);
             //对象缓存
             JsBrowserCache.put(jsBrowserInstance);
@@ -166,7 +185,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         }
 
         String instanceId = loginForm.getInstanceId();
-        String mobile = loginForm.getUserName();
+        String mobile = loginForm.getMobile();
         String password = loginForm.getPassword();
         String imei = loginForm.getImei();
         String verificationCode = loginForm.getVerificationCode();
@@ -180,13 +199,22 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
             return resultBean;
         }
 
+        JsChinaCrawlerInstance jsChinaCrawlerInstance = new JsChinaCrawlerInstance(instanceId);
+        jsChinaCrawlerInstance.setLastUpdateTime(new Date());
+        jsChinaCrawlerInstance.setStatus("2");
+
+        int i = jsChinaCrawlerInstanceMapper.updateJsChinaCrawlerInstance(jsChinaCrawlerInstance);
+        if(i <= 0){
+            resultBean.failure(ReturnCode.INSTANCE_ID_ISNOT_EXSIT);
+            return resultBean;
+        }
         // 获取redis是否已经缓存
         String instanceIdCache = redisUtils.get(MOBILE_KEY + mobile + imei, PRE_EXPIRE_TIME);
         JsSpiderInstance jsSpiderInstance = redisUtils.get(INSTANCE_KEY + instanceId, JsSpiderInstance.class, PRE_EXPIRE_TIME);
 
         if (StringUtils.isEmpty(instanceIdCache) || jsSpiderInstance == null || !JsBrowserCache.hasKey(instanceId)) {
             // 已失效 重新预登陆
-            resultBean.failure(ReturnCode.INSTANCE_ID_IS_NULL_OR_EXPIRE);
+            resultBean.failure(ReturnCode.INSTANCE_ID_EXPIRE);
             return resultBean;
 
 //            Map preLoginMap = preLoginProcess(mobile, imei, instanceId);
@@ -240,8 +268,12 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
             }
             return resultBean;
         }
-        // 发送短信
-        smsAuthorization(webClient);
+
+        // 异步触发短信
+        JsCrawlerSMSThread jsCrawlerSMSThread = new JsCrawlerSMSThread(instanceId);
+        Thread jsSMSThread = new Thread(jsCrawlerSMSThread);
+        jsSMSThread.start();
+
         redisUtils.expire(INSTANCE_KEY + instanceId, LOGIN_SUCCESS_TIME);
         redisUtils.set(TIMES + instanceId, 0, LOGIN_SUCCESS_TIME);
 
@@ -261,15 +293,20 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         if (StringUtils.isEmpty(instanceId) || StringUtils.isEmpty(smsCode)) {
             throw new ResultException(ReturnCode.PARAMS_NOT_ENOUGH);
         }
+
+        JsChinaCrawlerInstance jsChinaCrawlerInstanceDb = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
+        if(jsChinaCrawlerInstanceDb == null){
+            throw new ResultException(ReturnCode.INSTANCE_ID_ISNOT_EXSIT);
+        }
+
         //根据instanceId取手机号
         JsSpiderInstance jsSpiderInstance = redisUtils.get(INSTANCE_KEY + instanceId, JsSpiderInstance.class, LOGIN_SUCCESS_TIME);
 
         if (jsSpiderInstance == null || !JsBrowserCache.hasKey(instanceId)) {
             //超过6分钟 失效 请重新登陆
-            throw new ResultException(ReturnCode.INSTANCE_ID_IS_NULL_OR_EXPIRE);
+            throw new ResultException(ReturnCode.INSTANCE_ID_EXPIRE);
         }
         Long retryTimes = redisUtils.increment(TIMES + instanceId, LOGIN_SUCCESS_TIME);
-
 
         //刷新手机时间
 //        redisUtils.expire(INSTANCE_KEY + mobile,LOGIN_SUCCESS_TIME);
@@ -310,11 +347,16 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         redisUtils.setSerializable(COOKIES + instanceId, webClient.getCookieManager(), COOKIES_TIME);
         deleteWebClientCache(instanceId, jsSpiderInstance.getMobile(), jsSpiderInstance.getImei());
 
+        //短信验证码完成
+        JsChinaCrawlerInstance jsChinaCrawlerInstanceEnd = new JsChinaCrawlerInstance(instanceId);
+        jsChinaCrawlerInstanceEnd.setLastUpdateTime(new Date());
+        jsChinaCrawlerInstanceEnd.setStatus("3");
+        jsChinaCrawlerInstanceMapper.updateJsChinaCrawlerInstance(jsChinaCrawlerInstanceEnd);
+
         CookieManager cookieManager = (CookieManager) redisUtils.getSerializable(COOKIES + instanceId, COOKIES_TIME);
         JsCrawlerSMSVerifiedThread jsCrawlerSMSVerifiedThread = new JsCrawlerSMSVerifiedThread(instanceId, cookieManager, crawlerInstanceMapper);
         Thread jsThread = new Thread(jsCrawlerSMSVerifiedThread);
         jsThread.start();
-
     }
 
     /**
@@ -341,6 +383,12 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
 
     @Override
     public void sendSMSCode(String instanceId) {
+
+        JsChinaCrawlerInstance jsChinaCrawlerInstanceDb = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
+        if(jsChinaCrawlerInstanceDb == null){
+            throw new ResultException(ReturnCode.INSTANCE_ID_ISNOT_EXSIT);
+        }
+
         //根据instanceId取手机号
         JsSpiderInstance jsSpiderInstance = redisUtils.get(INSTANCE_KEY + instanceId, JsSpiderInstance.class, LOGIN_SUCCESS_TIME);
 
@@ -351,7 +399,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         }
         if (jsSpiderInstance == null || !JsBrowserCache.hasKey(instanceId)) {
             //超过6分钟 失效 请重新登陆
-            throw new ResultException(ReturnCode.INSTANCE_ID_IS_NULL_OR_EXPIRE);
+            throw new ResultException(ReturnCode.INSTANCE_ID_EXPIRE);
         }
         JsBrowserInstance jsBrowserInstance = JsBrowserCache.get(instanceId);
         WebClient webClient = jsBrowserInstance.getWebClient();
@@ -376,11 +424,16 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         if (StringUtils.isEmpty(instanceId)) {
             throw new ResultException(ReturnCode.INSTANCE_ID_IS_NULL);
         }
+        JsChinaCrawlerInstance jsChinaCrawlerInstanceDb = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
+        if(jsChinaCrawlerInstanceDb == null){
+            throw new ResultException(ReturnCode.INSTANCE_ID_ISNOT_EXSIT);
+        }
+
         JsSpiderInstance jsSpiderInstance = redisUtils.get(INSTANCE_KEY + instanceId, JsSpiderInstance.class, PRE_EXPIRE_TIME);
         JsBrowserInstance jsBrowserInstance = JsBrowserCache.get(instanceId);
 
         if (jsSpiderInstance == null || jsBrowserInstance == null) {
-            throw new ResultException(ReturnCode.INSTANCE_ID_IS_NULL_OR_EXPIRE);
+            throw new ResultException(ReturnCode.INSTANCE_ID_EXPIRE);
         }
         if (!jsBrowserInstance.isNeedVerifyCode()) {
             //不需要验证码
@@ -407,21 +460,23 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         return resultMap;
     }
 
-    /**
-     * 发送短信
-     */
-    static void smsAuthorization(WebClient webClient) {
-        String js = "$('#txtToDate').next('a').click();";
-        HtmlPage page;
-        try {
-            page = webClient.getPage(JsChinaMobileUrl.MY_DETAIL_CALL_URL);
-            page.executeJavaScript(js);
-            synchronized (page) {
-                page.wait(2000);
-            }
-        } catch (Exception e) {
-            logger.error("发送短信验证码",e);
+    @Override
+    public void addCustomerInformation(JsChinaCrawlerInstance jsChinaCrawlerInstance) {
+        String instanceId = jsChinaCrawlerInstance.getInstanceId();
+        String userName = jsChinaCrawlerInstance.getUserName();
+        String firstEmergencyContact = jsChinaCrawlerInstance.getFirstEmergencyContact();
+        String secondEmergencyContact = jsChinaCrawlerInstance.getSecondEmergencyContact();
+        if(StringUtils.isEmpty(instanceId) || StringUtils.isEmpty(userName) || StringUtils.isEmpty(firstEmergencyContact) || StringUtils.isEmpty(secondEmergencyContact)){
+            throw new ResultException(ReturnCode.PARAMS_NOT_ENOUGH);
         }
+
+        JsChinaCrawlerInstance jsChinaCrawlerInstanceDb = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
+        if(jsChinaCrawlerInstanceDb == null){
+            throw new ResultException(ReturnCode.INSTANCE_ID_ISNOT_EXSIT);
+        }
+        JsChinaCrawlerInstance jsChinaCrawlerInstanceNew = new JsChinaCrawlerInstance(instanceId,userName,firstEmergencyContact,secondEmergencyContact);
+        jsChinaCrawlerInstanceNew.setStatus("4");
+        jsChinaCrawlerInstanceMapper.updateJsChinaCrawlerInstance(jsChinaCrawlerInstanceNew);
     }
 
     /**

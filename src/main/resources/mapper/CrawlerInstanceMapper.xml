@@ -25,6 +25,9 @@
             <if test="accountBalance != null">
                 account_balance = #{accountBalance},
             </if>
+            <if test="creditLevel != null">
+                credit_level = #{creditLevel},
+            </if>
             <if test="personalInfo != null">
                 personal_info = #{personalInfo},
             </if>

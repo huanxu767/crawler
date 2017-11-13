@@ -3,15 +3,20 @@ package com.hb.crawler.thread;
 import com.gargoylesoftware.htmlunit.CookieManager;
 import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.google.gson.Gson;
 import com.hb.crawler.dao.CrawlerInstanceMapper;
-import com.hb.crawler.pojo.JsChinaMobileUrl;
-import com.hb.crawler.pojo.JsCrawlerChinaMobileLog;
+import com.hb.crawler.dao.JsChinaCrawlerCallMapper;
+import com.hb.crawler.dao.JsChinaCrawlerReportMapper;
+import com.hb.crawler.pojo.*;
 import com.hb.crawler.util.JsChinaMobileCrawlerUtils;
 import com.hb.crawler.util.MDateUtils;
 import com.hb.crawler.util.StringFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +31,6 @@ public class JsCrawlerSMSVerifiedThread implements Runnable {
     private int times = 3;
 
     private CookieManager cookieManager;
-
     private CrawlerInstanceMapper crawlerInstanceMapper;
 
     private String instanceId;
@@ -101,5 +105,6 @@ public class JsCrawlerSMSVerifiedThread implements Runnable {
             getDetail(webClient);
         }
     }
+
 
 }
