@@ -127,9 +127,4 @@ public class MDateUtils {
         return simpleDateFormat.format(DateUtils.addDays(new Date(), days));
     }
 
-    public static void main(String[] args) {
-        System.out.println(betweenDaysNum("2017-10-06", "2017-09-30"));
-        System.out.println(betweenDaysNum("2017-10-01", "2017-09-30"));
-
-    }
 }

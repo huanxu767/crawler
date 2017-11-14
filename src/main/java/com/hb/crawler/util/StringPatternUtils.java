@@ -26,7 +26,4 @@ public class StringPatternUtils {
         return true;
     }
 
-    public static void main(String[] args) {
-        System.out.println(isMobile("12345678912"));
-    }
 }

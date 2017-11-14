@@ -375,8 +375,6 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         webClient.setCookieManager(cookieManager);
         try {
             TextPage page = (TextPage) webClient.getPage("http://service.js.10086.cn/my/actionDispatcher.do?reqUrl=MY_QDCXQueryNew&busiNum=QDCX&queryMonth=201710&queryItem=1&qryPages=1:1002:-1&qryNo=1&operType=3&queryBeginTime=2017-10-01&queryEndTime=2017-10-30");
-            System.out.println("数据");
-//            System.out.println(page.getContent());
             return page.getContent();
         } catch (IOException e) {
             e.printStackTrace();

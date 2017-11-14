@@ -25,7 +25,4 @@ public class RandomGenerator {
         return "" + System.currentTimeMillis() + randomNumber;
     }
 
-    public static void main(String[] args) {
-        System.out.println(timeId());
-    }
 }

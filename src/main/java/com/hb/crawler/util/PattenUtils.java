@@ -29,9 +29,7 @@ public class PattenUtils {
         try {
             // 取余额
             HtmlPage htmlPage = webClient.getPage("http://www.baidu.com");
-            int j = 1 / 0;
         } catch (Exception e) {
-            System.out.println(times);
             if (--times <= 0) {
                 e.printStackTrace();
             } else {

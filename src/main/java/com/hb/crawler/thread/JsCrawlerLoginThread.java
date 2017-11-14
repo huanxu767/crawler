@@ -64,7 +64,6 @@ public class JsCrawlerLoginThread implements Runnable {
 
             ScriptResult creditFlagScriptResult = htmlPage.executeJavaScript(creditLevelFlagJs);
             int creditLevel = 0;
-            System.out.println(creditFlagScriptResult.getJavaScriptResult().toString());
             if (Boolean.parseBoolean(creditFlagScriptResult.getJavaScriptResult().toString())) {
                 ScriptResult creditScriptResult = htmlPage.executeJavaScript(creditLevelJs);
                 creditLevel = Integer.parseInt(PattenUtils.getNumbers(creditScriptResult.getJavaScriptResult().toString()));

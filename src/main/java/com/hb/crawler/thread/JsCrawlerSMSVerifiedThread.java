@@ -37,7 +37,6 @@ public class JsCrawlerSMSVerifiedThread implements Runnable {
 
     @Override
     public void run() {
-        System.out.println(cookieManager.getCookies());
         final WebClient webClient = JsChinaMobileCrawlerUtils.getWebClient(false);
         webClient.setCookieManager(cookieManager);
         getDetail(webClient);
