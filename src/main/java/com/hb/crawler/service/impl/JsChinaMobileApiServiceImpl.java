@@ -3,9 +3,10 @@ package com.hb.crawler.service.impl;
 import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.HtmlImage;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.hb.crawler.dao.CrawlerInstanceMapper;
+import com.hb.crawler.dao.JsChinaCrawlerCallMapper;
 import com.hb.crawler.dao.JsChinaCrawlerInstanceMapper;
 import com.hb.crawler.dao.JsChinaCrawlerReportMapper;
+import com.hb.crawler.dao.JsChinaCrawlerSourceLogMapper;
 import com.hb.crawler.exception.ResultException;
 import com.hb.crawler.pojo.*;
 import com.hb.crawler.property.ConfigProperties;
@@ -37,12 +38,16 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
     @Autowired
     private ConfigProperties configProperties;
     @Autowired
-    private CrawlerInstanceMapper crawlerInstanceMapper;
+    private JsChinaCrawlerSourceLogMapper jsChinaCrawlerSourceLogMapper;
 
     @Autowired
     private JsChinaCrawlerInstanceMapper jsChinaCrawlerInstanceMapper;
     @Autowired
     private JsChinaCrawlerReportMapper jsChinaCrawlerReportMapper;
+
+    @Autowired
+    private JsChinaCrawlerCallMapper jsChinaCrawlerCallMapper;
+
     @Autowired
     private RedisUtils redisUtils;
 
@@ -281,8 +286,8 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
 
         //异步抓取信息
         //插入数据库
-        crawlerInstanceMapper.insertJsCrawlerChinaMobileLog(instanceId, mobile);
-        JsCrawlerLoginThread jsCrawlerLoginThread = new JsCrawlerLoginThread(instanceId, webClient.getCookieManager(), crawlerInstanceMapper);
+        jsChinaCrawlerSourceLogMapper.insertJsChinaCrawlerSourceLog(instanceId, mobile);
+        JsCrawlerLoginThread jsCrawlerLoginThread = new JsCrawlerLoginThread(instanceId, webClient.getCookieManager(), jsChinaCrawlerSourceLogMapper);
         Thread jsThread = new Thread(jsCrawlerLoginThread);
         jsThread.start();
 
@@ -356,7 +361,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         jsChinaCrawlerInstanceMapper.updateJsChinaCrawlerInstance(jsChinaCrawlerInstanceEnd);
 
         CookieManager cookieManager = (CookieManager) redisUtils.getSerializable(COOKIES + instanceId, COOKIES_TIME);
-        JsCrawlerSMSVerifiedThread jsCrawlerSMSVerifiedThread = new JsCrawlerSMSVerifiedThread(instanceId, cookieManager, crawlerInstanceMapper);
+        JsCrawlerSMSVerifiedThread jsCrawlerSMSVerifiedThread = new JsCrawlerSMSVerifiedThread(instanceId, cookieManager, jsChinaCrawlerSourceLogMapper);
         Thread jsThread = new Thread(jsCrawlerSMSVerifiedThread);
         jsThread.start();
     }
@@ -471,7 +476,6 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         if(StringUtils.isEmpty(instanceId) || StringUtils.isEmpty(userName) || StringUtils.isEmpty(firstEmergencyContact) || StringUtils.isEmpty(secondEmergencyContact)){
             throw new ResultException(ReturnCode.PARAMS_NOT_ENOUGH);
         }
-
         JsChinaCrawlerInstance jsChinaCrawlerInstanceDb = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
         if(jsChinaCrawlerInstanceDb == null){
             throw new ResultException(ReturnCode.INSTANCE_ID_ISNOT_EXSIT);
@@ -479,12 +483,10 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         JsChinaCrawlerInstance jsChinaCrawlerInstanceNew = new JsChinaCrawlerInstance(instanceId,userName,firstEmergencyContact,secondEmergencyContact);
         jsChinaCrawlerInstanceNew.setStatus("4");
         jsChinaCrawlerInstanceMapper.updateJsChinaCrawlerInstance(jsChinaCrawlerInstanceNew);
-
-        // 异步触发短信
-        JsChinaAnalysisLogThread jsChinaAnalysisLogThread = new JsChinaAnalysisLogThread(instanceId,jsChinaCrawlerInstanceMapper);
+        // 异步生成报告
+        JsChinaAnalysisLogThread jsChinaAnalysisLogThread = new JsChinaAnalysisLogThread(instanceId,jsChinaCrawlerInstanceMapper,jsChinaCrawlerCallMapper,jsChinaCrawlerSourceLogMapper,jsChinaCrawlerReportMapper);
         Thread jsAnalysisLogThread = new Thread(jsChinaAnalysisLogThread);
         jsAnalysisLogThread.start();
-
     }
 
     /**

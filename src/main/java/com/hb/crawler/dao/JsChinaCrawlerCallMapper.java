@@ -39,10 +39,11 @@ public interface JsChinaCrawlerCallMapper {
      * 距上次与紧急联系人联系天数
      *
      * @param instanceId
-     * @param mobile
+     * @param firstEmergencyContact
+     * @param secondEmergencyContact
      * @return
      */
-    Map queryLastConnectDay(@Param("instanceId") String instanceId, @Param("mobile") String mobile);
+    Map queryLastConnectDay(@Param("instanceId") String instanceId, @Param("firstEmergencyContact") String firstEmergencyContact, @Param("secondEmergencyContact") String secondEmergencyContact);
 
     /**
      * 总联系天数

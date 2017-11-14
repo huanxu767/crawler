@@ -5,9 +5,9 @@ import com.gargoylesoftware.htmlunit.ScriptResult;
 import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.hb.crawler.dao.CrawlerInstanceMapper;
+import com.hb.crawler.dao.JsChinaCrawlerSourceLogMapper;
+import com.hb.crawler.pojo.JsChinaCrawlerSourceLog;
 import com.hb.crawler.pojo.JsChinaMobileUrl;
-import com.hb.crawler.pojo.JsCrawlerChinaMobileLog;
 import com.hb.crawler.service.impl.JsChinaMobileApiServiceImpl;
 import com.hb.crawler.util.JsChinaMobileCrawlerUtils;
 import com.hb.crawler.util.MDateUtils;
@@ -28,14 +28,14 @@ public class JsCrawlerLoginThread implements Runnable {
 
     private CookieManager cookieManager;
 
-    private CrawlerInstanceMapper crawlerInstanceMapper;
+    private JsChinaCrawlerSourceLogMapper jsChinaCrawlerSourceLogMapper;
 
     private String instanceId;
 
-    public JsCrawlerLoginThread(String instanceId, CookieManager cookieManager, CrawlerInstanceMapper crawlerInstanceMapper) {
+    public JsCrawlerLoginThread(String instanceId, CookieManager cookieManager, JsChinaCrawlerSourceLogMapper jsChinaCrawlerSourceLogMapper) {
         this.instanceId = instanceId;
         this.cookieManager = cookieManager;
-        this.crawlerInstanceMapper = crawlerInstanceMapper;
+        this.jsChinaCrawlerSourceLogMapper = jsChinaCrawlerSourceLogMapper;
     }
 
     @Override
@@ -51,9 +51,9 @@ public class JsCrawlerLoginThread implements Runnable {
         String js = "$('.font-pink1').html();";
         String creditLevelFlagJs = "$('#popBox-verifyCode-idType').is(':visible');";
         String creditLevelJs = "$('#popBox-verifyCode-idType').text();";
-        JsCrawlerChinaMobileLog jsCrawlerChinaMobileLog = new JsCrawlerChinaMobileLog();
+        JsChinaCrawlerSourceLog jsChinaCrawlerSourceLog = new JsChinaCrawlerSourceLog();
         try {
-            jsCrawlerChinaMobileLog.setInstanceId(instanceId);
+            jsChinaCrawlerSourceLog.setInstanceId(instanceId);
             // 取余额
             HtmlPage htmlPage = webClient.getPage(JsChinaMobileUrl.BALANCE_URL);
             ScriptResult scriptResult = htmlPage.executeJavaScript(js);
@@ -68,7 +68,7 @@ public class JsCrawlerLoginThread implements Runnable {
                 ScriptResult creditScriptResult = htmlPage.executeJavaScript(creditLevelJs);
                 creditLevel = Integer.parseInt(PattenUtils.getNumbers(creditScriptResult.getJavaScriptResult().toString()));
             }
-            jsCrawlerChinaMobileLog.setCreditLevel(creditLevel);
+            jsChinaCrawlerSourceLog.setCreditLevel(creditLevel);
 
             // 取近个月花费金额
             TextPage monthBillTextPage = webClient.getPage(JsChinaMobileUrl.BILL_URL + MDateUtils.getLastMonthYearMonth());
@@ -84,14 +84,13 @@ public class JsCrawlerLoginThread implements Runnable {
             TextPage openedFunctionTextPage = webClient.getPage(JsChinaMobileUrl.OPENED_FUNCTION + MDateUtils.getLastMonthYearMonth());
             String openedFunction = openedFunctionTextPage.getContent().toString();
 
-            jsCrawlerChinaMobileLog.setAccountBalance(phoneRemain);
-            jsCrawlerChinaMobileLog.setMonthBill(monthBill);
-            jsCrawlerChinaMobileLog.setOpenedPackage(openedPackage);
-            jsCrawlerChinaMobileLog.setOpenedBusiness(openedBusiness);
-            jsCrawlerChinaMobileLog.setOpenedFunction(openedFunction);
+            jsChinaCrawlerSourceLog.setAccountBalance(phoneRemain);
+            jsChinaCrawlerSourceLog.setMonthBill(monthBill);
+            jsChinaCrawlerSourceLog.setOpenedPackage(openedPackage);
+            jsChinaCrawlerSourceLog.setOpenedBusiness(openedBusiness);
+            jsChinaCrawlerSourceLog.setOpenedFunction(openedFunction);
 
-            crawlerInstanceMapper.updateCrawlerJsChinaMobileLog(jsCrawlerChinaMobileLog);
-
+            jsChinaCrawlerSourceLogMapper.updateJsChinaCrawlerSourceLog(jsChinaCrawlerSourceLog);
         } catch (Exception e) {
             if (--times <= 0) {
                 logger.error("获取个人账单：", e);

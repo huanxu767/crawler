@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.hb.crawler.dao.CrawlerInstanceMapper">
+<mapper namespace="com.hb.crawler.dao.JsChinaCrawlerSourceLogMapper">
 
-    <resultMap id="jsCrawlerChinaMobileLog" type="com.hb.crawler.pojo.JsCrawlerChinaMobileLog">  </resultMap>
+    <resultMap id="jsChinaCrawlerSourceLog" type="com.hb.crawler.pojo.JsChinaCrawlerSourceLog">  </resultMap>
 
-    <select id="queryJsCrawlerChinaMobileLog" resultMap="jsCrawlerChinaMobileLog">
+    <select id="queryJsChinaCrawlerSourceLog" resultMap="jsChinaCrawlerSourceLog">
         select *
-        from crawler_js_china_mobile_log
+        from crawler_js_china_source_log
         <where>
             instance_id = #{instanceId}
         </where>
     </select>
-    <insert id="insertJsCrawlerChinaMobileLog">
-        insert into crawler_js_china_mobile_log(instance_id,mobile)
+    <insert id="insertJsChinaCrawlerSourceLog">
+        insert into crawler_js_china_source_log(instance_id,mobile)
         values( #{instanceId},#{mobile})
     </insert>
 
-    <update id="updateCrawlerJsChinaMobileLog">
-        update crawler_js_china_mobile_log
+    <update id="updateJsChinaCrawlerSourceLog">
+        update crawler_js_china_source_log
         <set>
             <if test="mobile != null">
                 mobile = #{mobile},

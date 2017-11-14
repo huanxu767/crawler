@@ -1,16 +1,15 @@
 package com.hb.crawler.dao;
 
-import com.hb.crawler.pojo.JsCrawlerChinaMobileLog;
+import com.hb.crawler.pojo.JsChinaCrawlerSourceLog;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Map;
 
 /**
  * 爬虫实例DAO
  */
 @Repository
-public interface CrawlerInstanceMapper {
+public interface JsChinaCrawlerSourceLogMapper {
 
     /**
      * 江苏移动数据入库
@@ -18,7 +17,7 @@ public interface CrawlerInstanceMapper {
      * @param instanceId
      * @return
      */
-    int insertJsCrawlerChinaMobileLog(@Param("instanceId") String instanceId, @Param("mobile") String mobile);
+    int insertJsChinaCrawlerSourceLog(@Param("instanceId") String instanceId, @Param("mobile") String mobile);
 
     /**
      * 更新江苏移动数据
@@ -26,13 +25,13 @@ public interface CrawlerInstanceMapper {
      * @param jsCrawlerChinaMobileLog
      * @return
      */
-    int updateCrawlerJsChinaMobileLog(JsCrawlerChinaMobileLog jsCrawlerChinaMobileLog);
+    int updateJsChinaCrawlerSourceLog(JsChinaCrawlerSourceLog jsCrawlerChinaMobileLog);
 
     /**
      * 查询江苏移动抓取的信息
      * @param instanceId
      * @return
      */
-    JsCrawlerChinaMobileLog queryJsCrawlerChinaMobileLog(String instanceId);
+    JsChinaCrawlerSourceLog queryJsChinaCrawlerSourceLog(String instanceId);
 
 }

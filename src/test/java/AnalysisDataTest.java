@@ -1,10 +1,10 @@
 import com.google.gson.Gson;
-import com.hb.crawler.dao.CrawlerInstanceMapper;
 import com.hb.crawler.dao.JsChinaCrawlerCallMapper;
+import com.hb.crawler.dao.JsChinaCrawlerSourceLogMapper;
 import com.hb.crawler.pojo.JsChinaCrawlerCall;
 import com.hb.crawler.pojo.JsChinaCrawlerNet;
 import com.hb.crawler.pojo.JsChinaCrawlerSMS;
-import com.hb.crawler.pojo.JsCrawlerChinaMobileLog;
+import com.hb.crawler.pojo.JsChinaCrawlerSourceLog;
 import com.hb.crawler.util.MDateUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +26,7 @@ import static com.hb.crawler.util.MDateUtils.getCurrentYearDays;
 @ContextConfiguration(locations = {"classpath:application.xml", "classpath:application-db.xml", "classpath:application-redis.xml"})
 public class AnalysisDataTest {
     @Autowired
-    private CrawlerInstanceMapper crawlerInstanceMapper;
+    private JsChinaCrawlerSourceLogMapper jsChinaCrawlerSourceLogMapper;
 
     @Autowired
     private JsChinaCrawlerCallMapper jsChinaCrawlerCallMapper;
@@ -37,23 +37,23 @@ public class AnalysisDataTest {
         //紧急联系人
         String mobile = "18652090357";
         String userName = "";
-//        JsCrawlerChinaMobileLog jsCrawlerChinaMobileLog = crawlerInstanceMapper.queryJsCrawlerChinaMobileLog(instanceId);
-//        //月账单
-//        billMonthBill(jsCrawlerChinaMobileLog);
-//        //是否集团账户
-//        vNet(jsCrawlerChinaMobileLog);
-//        //通话记录
-//        call(instanceId,jsCrawlerChinaMobileLog);
-//        //短信记录
-//        sms(instanceId,jsCrawlerChinaMobileLog);
-//        //上网记录
-//        net(instanceId,jsCrawlerChinaMobileLog);
-        //距上次与紧急联系人联系天数
-//        String days = queryLastConnectDay(instanceId,mobile);
-//        System.out.println(days);
-        //总手机通话联系人数
-//        Long otherParties = jsChinaCrawlerCallMapper.countCallOtherParties(instanceId);
-//        System.out.println(otherParties);
+        JsChinaCrawlerSourceLog jsCrawlerChinaMobileLog = jsChinaCrawlerSourceLogMapper.queryJsChinaCrawlerSourceLog(instanceId);
+        //月账单
+        billMonthBill(jsCrawlerChinaMobileLog);
+        //是否集团账户
+        vNet(jsCrawlerChinaMobileLog);
+        //通话记录
+        call(instanceId,jsCrawlerChinaMobileLog);
+        //短信记录
+        sms(instanceId,jsCrawlerChinaMobileLog);
+        //上网记录
+        net(instanceId,jsCrawlerChinaMobileLog);
+//        距上次与紧急联系人联系天数
+        String lastDays = queryLastConnectDay(instanceId,mobile);
+        System.out.println(lastDays);
+//        总手机通话联系人数
+        Long otherParties = jsChinaCrawlerCallMapper.countCallOtherParties(instanceId);
+        System.out.println(otherParties);
         //
         List<String> countOnLineDays = jsChinaCrawlerCallMapper.queryOnLineDays(instanceId);
         String tempDate = "";
@@ -82,7 +82,7 @@ public class AnalysisDataTest {
     }
 
     String queryLastConnectDay(String instanceId, String mobile) {
-        Map map = jsChinaCrawlerCallMapper.queryLastConnectDay(instanceId, mobile);
+        Map map = jsChinaCrawlerCallMapper.queryLastConnectDay(instanceId, mobile,"1123644");
         if (map.isEmpty()) {
             return "9999";
         }
@@ -90,7 +90,7 @@ public class AnalysisDataTest {
         return MDateUtils.betweenDays(startTime, "yyyy-MM-dd HH:mm:ss");
     }
 
-    private void net(String instanceId, JsCrawlerChinaMobileLog jsCrawlerChinaMobileLog) {
+    private void net(String instanceId, JsChinaCrawlerSourceLog jsCrawlerChinaMobileLog) {
         addNet(instanceId, jsCrawlerChinaMobileLog.getNetLogOne());
         addNet(instanceId, jsCrawlerChinaMobileLog.getNetLogTwo());
         addNet(instanceId, jsCrawlerChinaMobileLog.getNetLogThree());
@@ -131,7 +131,7 @@ public class AnalysisDataTest {
 
     }
 
-    private void sms(String instanceId, JsCrawlerChinaMobileLog jsCrawlerChinaMobileLog) {
+    private void sms(String instanceId, JsChinaCrawlerSourceLog jsCrawlerChinaMobileLog) {
         addSms(instanceId, jsCrawlerChinaMobileLog.getMessageLogOne());
         addSms(instanceId, jsCrawlerChinaMobileLog.getMessageLogTwo());
         addSms(instanceId, jsCrawlerChinaMobileLog.getMessageLogThree());
@@ -171,7 +171,7 @@ public class AnalysisDataTest {
         System.out.println(effectSize);
     }
 
-    private void billMonthBill(JsCrawlerChinaMobileLog jsCrawlerChinaMobileLog) {
+    private void billMonthBill(JsChinaCrawlerSourceLog jsChinaCrawlerSourceLog) {
         //解析 月账单
         Gson gson = new Gson();
         int sumMonthBill = 0;
@@ -179,7 +179,7 @@ public class AnalysisDataTest {
         int maxMonthBill = 0;
         long bzc = 0;
         String userName = "";
-        String monthBillJson = jsCrawlerChinaMobileLog.getMonthBill();
+        String monthBillJson = jsChinaCrawlerSourceLog.getMonthBill();
         Map map = gson.fromJson(monthBillJson, HashMap.class);
         Map resultObjMap = (Map) map.get("resultObj");
         Map billBean = (Map) resultObjMap.get("billBean");
@@ -209,9 +209,9 @@ public class AnalysisDataTest {
         System.out.println("历史最高账单金额:" + maxMonthBill);
         System.out.println("标准差:" + bzc);
         System.out.println("用户姓名:" + userName);
-        System.out.println("手机余额:" + jsCrawlerChinaMobileLog.getAccountBalance());
+        System.out.println("手机余额:" + jsChinaCrawlerSourceLog.getAccountBalance());
 //        开户时间
-        String openedFunctionJson = jsCrawlerChinaMobileLog.getOpenedFunction();
+        String openedFunctionJson = jsChinaCrawlerSourceLog.getOpenedFunction();
         Map openedFunctionMap = gson.fromJson(openedFunctionJson, HashMap.class);
         Map resultObj = (Map) openedFunctionMap.get("resultObj");
         List keyBizList = (List) resultObj.get("KEY_bizList");
@@ -239,7 +239,7 @@ public class AnalysisDataTest {
         System.out.println("在网天数:" + MDateUtils.betweenDays(khsj));
     }
 
-    private void vNet(JsCrawlerChinaMobileLog jsCrawlerChinaMobileLog) {
+    private void vNet(JsChinaCrawlerSourceLog jsCrawlerChinaMobileLog) {
         Gson gson = new Gson();
         String openedBusinessJson = jsCrawlerChinaMobileLog.getOpenedBusiness();
 
@@ -261,7 +261,7 @@ public class AnalysisDataTest {
         System.out.println("集团V网天数:" + joinComVNetDays);
     }
 
-    private void call(String instanceId, JsCrawlerChinaMobileLog jsCrawlerChinaMobileLog) {
+    private void call(String instanceId, JsChinaCrawlerSourceLog jsCrawlerChinaMobileLog) {
         addCall(instanceId, jsCrawlerChinaMobileLog.getCallLogSix());
         addCall(instanceId, jsCrawlerChinaMobileLog.getCallLogFive());
         addCall(instanceId, jsCrawlerChinaMobileLog.getCallLogFour());

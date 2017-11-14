@@ -3,20 +3,14 @@ package com.hb.crawler.thread;
 import com.gargoylesoftware.htmlunit.CookieManager;
 import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.google.gson.Gson;
-import com.hb.crawler.dao.CrawlerInstanceMapper;
-import com.hb.crawler.dao.JsChinaCrawlerCallMapper;
-import com.hb.crawler.dao.JsChinaCrawlerReportMapper;
+import com.hb.crawler.dao.JsChinaCrawlerSourceLogMapper;
 import com.hb.crawler.pojo.*;
 import com.hb.crawler.util.JsChinaMobileCrawlerUtils;
 import com.hb.crawler.util.MDateUtils;
 import com.hb.crawler.util.StringFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,14 +25,14 @@ public class JsCrawlerSMSVerifiedThread implements Runnable {
     private int times = 3;
 
     private CookieManager cookieManager;
-    private CrawlerInstanceMapper crawlerInstanceMapper;
+    private JsChinaCrawlerSourceLogMapper jsChinaCrawlerSourceLogMapper;
 
     private String instanceId;
 
-    public JsCrawlerSMSVerifiedThread(String instanceId, CookieManager cookieManager, CrawlerInstanceMapper crawlerInstanceMapper) {
+    public JsCrawlerSMSVerifiedThread(String instanceId, CookieManager cookieManager, JsChinaCrawlerSourceLogMapper jsChinaCrawlerSourceLogMapper) {
         this.instanceId = instanceId;
         this.cookieManager = cookieManager;
-        this.crawlerInstanceMapper = crawlerInstanceMapper;
+        this.jsChinaCrawlerSourceLogMapper = jsChinaCrawlerSourceLogMapper;
     }
 
     @Override
@@ -51,7 +45,7 @@ public class JsCrawlerSMSVerifiedThread implements Runnable {
     }
 
     private void getDetail(WebClient webClient) {
-        JsCrawlerChinaMobileLog jsCrawlerChinaMobileLog = new JsCrawlerChinaMobileLog();
+        JsChinaCrawlerSourceLog jsCrawlerChinaMobileLog = new JsChinaCrawlerSourceLog();
         jsCrawlerChinaMobileLog.setInstanceId(instanceId);
         List<Map<String,String>> lastSixMonthList = MDateUtils.getLastSixMonth();
         try {
@@ -97,7 +91,7 @@ public class JsCrawlerSMSVerifiedThread implements Runnable {
                         break;
                 }
             }
-            crawlerInstanceMapper.updateCrawlerJsChinaMobileLog(jsCrawlerChinaMobileLog);
+            jsChinaCrawlerSourceLogMapper.updateJsChinaCrawlerSourceLog(jsCrawlerChinaMobileLog);
         } catch (Exception e) {
             if (--times <= 0) {
                 logger.error("获取通话详单：", e);

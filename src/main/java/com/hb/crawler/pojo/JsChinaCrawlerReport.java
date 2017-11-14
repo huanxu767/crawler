@@ -9,21 +9,21 @@ public class JsChinaCrawlerReport {
     private Long id;
     private String instanceId;
     private String mobile;
-    private String user_name;
 
+    private String realName;
     private String isRealName;
-    private Long monthAveragePayment;
-    private Long maxPayment;
-    private Long standardDeviation;
-    private Long emergencyContactDays ;
-    private Long totalContact ;
+    private int monthAveragePayment;
+    private int maxPayment;
+    private int standardDeviation;
+    private int emergencyContactDays ;
+    private int totalContact ;
     private String isGroup;
-    private Long joinGroupDays ;
-    private Long onlineDays ;
-    private Long creditLevel ;
-    private Long accountBalance ;
-    private Long continuousOfflineDays ;
-    private Long offlineDaysTimes ;
+    private int joinGroupDays ;
+    private int onlineDays ;
+    private int creditLevel ;
+    private int accountBalance ;
+    private int continuousOfflineDays ;
+    private int offlineDaysTimes ;
 
     private Date createTime ;
 
@@ -51,12 +51,12 @@ public class JsChinaCrawlerReport {
         this.mobile = mobile;
     }
 
-    public String getUser_name() {
-        return user_name;
+    public String getRealName() {
+        return realName;
     }
 
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     public String getIsRealName() {
@@ -67,43 +67,43 @@ public class JsChinaCrawlerReport {
         this.isRealName = isRealName;
     }
 
-    public Long getMonthAveragePayment() {
+    public int getMonthAveragePayment() {
         return monthAveragePayment;
     }
 
-    public void setMonthAveragePayment(Long monthAveragePayment) {
+    public void setMonthAveragePayment(int monthAveragePayment) {
         this.monthAveragePayment = monthAveragePayment;
     }
 
-    public Long getMaxPayment() {
+    public int getMaxPayment() {
         return maxPayment;
     }
 
-    public void setMaxPayment(Long maxPayment) {
+    public void setMaxPayment(int maxPayment) {
         this.maxPayment = maxPayment;
     }
 
-    public Long getStandardDeviation() {
+    public int getStandardDeviation() {
         return standardDeviation;
     }
 
-    public void setStandardDeviation(Long standardDeviation) {
+    public void setStandardDeviation(int standardDeviation) {
         this.standardDeviation = standardDeviation;
     }
 
-    public Long getEmergencyContactDays() {
+    public int getEmergencyContactDays() {
         return emergencyContactDays;
     }
 
-    public void setEmergencyContactDays(Long emergencyContactDays) {
+    public void setEmergencyContactDays(int emergencyContactDays) {
         this.emergencyContactDays = emergencyContactDays;
     }
 
-    public Long getTotalContact() {
+    public int getTotalContact() {
         return totalContact;
     }
 
-    public void setTotalContact(Long totalContact) {
+    public void setTotalContact(int totalContact) {
         this.totalContact = totalContact;
     }
 
@@ -115,51 +115,51 @@ public class JsChinaCrawlerReport {
         this.isGroup = isGroup;
     }
 
-    public Long getJoinGroupDays() {
+    public int getJoinGroupDays() {
         return joinGroupDays;
     }
 
-    public void setJoinGroupDays(Long joinGroupDays) {
+    public void setJoinGroupDays(int joinGroupDays) {
         this.joinGroupDays = joinGroupDays;
     }
 
-    public Long getOnlineDays() {
+    public int getOnlineDays() {
         return onlineDays;
     }
 
-    public void setOnlineDays(Long onlineDays) {
+    public void setOnlineDays(int onlineDays) {
         this.onlineDays = onlineDays;
     }
 
-    public Long getCreditLevel() {
+    public int getCreditLevel() {
         return creditLevel;
     }
 
-    public void setCreditLevel(Long creditLevel) {
+    public void setCreditLevel(int creditLevel) {
         this.creditLevel = creditLevel;
     }
 
-    public Long getAccountBalance() {
+    public int getAccountBalance() {
         return accountBalance;
     }
 
-    public void setAccountBalance(Long accountBalance) {
+    public void setAccountBalance(int accountBalance) {
         this.accountBalance = accountBalance;
     }
 
-    public Long getContinuousOfflineDays() {
+    public int getContinuousOfflineDays() {
         return continuousOfflineDays;
     }
 
-    public void setContinuousOfflineDays(Long continuousOfflineDays) {
+    public void setContinuousOfflineDays(int continuousOfflineDays) {
         this.continuousOfflineDays = continuousOfflineDays;
     }
 
-    public Long getOfflineDaysTimes() {
+    public int getOfflineDaysTimes() {
         return offlineDaysTimes;
     }
 
-    public void setOfflineDaysTimes(Long offlineDaysTimes) {
+    public void setOfflineDaysTimes(int offlineDaysTimes) {
         this.offlineDaysTimes = offlineDaysTimes;
     }
 
@@ -169,5 +169,29 @@ public class JsChinaCrawlerReport {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    @Override
+    public String toString() {
+        return "JsChinaCrawlerReport{" +
+                "id=" + id +
+                ", instanceId='" + instanceId + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", realName='" + realName + '\'' +
+                ", isRealName='" + isRealName + '\'' +
+                ", monthAveragePayment=" + monthAveragePayment +
+                ", maxPayment=" + maxPayment +
+                ", standardDeviation=" + standardDeviation +
+                ", emergencyContactDays=" + emergencyContactDays +
+                ", totalContact=" + totalContact +
+                ", isGroup='" + isGroup + '\'' +
+                ", joinGroupDays=" + joinGroupDays +
+                ", onlineDays=" + onlineDays +
+                ", creditLevel=" + creditLevel +
+                ", accountBalance=" + accountBalance +
+                ", continuousOfflineDays=" + continuousOfflineDays +
+                ", offlineDaysTimes=" + offlineDaysTimes +
+                ", createTime=" + createTime +
+                '}';
     }
 }

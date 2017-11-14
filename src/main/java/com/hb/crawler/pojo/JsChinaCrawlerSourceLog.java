@@ -2,7 +2,7 @@ package com.hb.crawler.pojo;
 
 import java.util.Date;
 
-public class JsCrawlerChinaMobileLog {
+public class JsChinaCrawlerSourceLog {
 
     private Long id;
     private String instanceId;
