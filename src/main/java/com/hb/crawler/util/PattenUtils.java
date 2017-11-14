@@ -1,14 +1,8 @@
 package com.hb.crawler.util;
 
-import com.gargoylesoftware.htmlunit.ScriptResult;
-import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.hb.crawler.pojo.JsChinaMobileUrl;
-import org.springframework.util.StringUtils;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
