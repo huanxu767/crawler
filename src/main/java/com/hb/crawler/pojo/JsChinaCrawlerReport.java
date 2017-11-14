@@ -17,17 +17,17 @@ public class JsChinaCrawlerReport {
     private int monthAveragePayment;
     private int maxPayment;
     private int standardDeviation;
-    private int emergencyContactDays ;
-    private int totalContact ;
+    private int emergencyContactDays;
+    private int totalContact;
     private String isGroup;
-    private int joinGroupDays ;
-    private int onlineDays ;
-    private int creditLevel ;
-    private int accountBalance ;
-    private int continuousOfflineDays ;
-    private int offlineDaysTimes ;
+    private int joinGroupDays;
+    private int onlineDays;
+    private int creditLevel;
+    private int accountBalance;
+    private int continuousOfflineDays;
+    private int offlineDaysTimes;
 
-    private Date createTime ;
+    private Date createTime;
 
     public Long getId() {
         return id;
@@ -173,23 +173,23 @@ public class JsChinaCrawlerReport {
         this.createTime = createTime;
     }
 
-    public Map getMap(){
+    public Map getMap() {
         Map map = new HashMap();
-        map.put("R000",true);
-        map.put("IR000","");
-        map.put("R001","0".equals(isRealName)?false:true);
-        map.put("F000",monthAveragePayment);
-        map.put("F0001",maxPayment);
-        map.put("F0002",standardDeviation);
-        map.put("F001",emergencyContactDays);
-        map.put("F002",totalContact);
-        map.put("F003","0".equals(isGroup)?false:true);
-        map.put("F005",joinGroupDays);
-        map.put("F006",creditLevel);
-        map.put("F007",accountBalance);
-        map.put("F0031",joinGroupDays);
-        map.put("F010",continuousOfflineDays);
-        map.put("F009",offlineDaysTimes);
+        map.put("R000", true);
+        map.put("IR000", "");
+        map.put("R001", "0".equals(isRealName) ? false : true);
+        map.put("F000", monthAveragePayment);
+        map.put("F0001", maxPayment);
+        map.put("F0002", standardDeviation);
+        map.put("F001", emergencyContactDays);
+        map.put("F002", totalContact);
+        map.put("F003", "0".equals(isGroup) ? false : true);
+        map.put("F005", joinGroupDays);
+        map.put("F006", creditLevel);
+        map.put("F007", accountBalance);
+        map.put("F0031", joinGroupDays);
+        map.put("F010", continuousOfflineDays);
+        map.put("F009", offlineDaysTimes);
         return map;
     }
 

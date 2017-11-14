@@ -47,18 +47,18 @@ public class JsCrawlerSMSVerifiedThread implements Runnable {
     private void getDetail(WebClient webClient) {
         JsChinaCrawlerSourceLog jsCrawlerChinaMobileLog = new JsChinaCrawlerSourceLog();
         jsCrawlerChinaMobileLog.setInstanceId(instanceId);
-        List<Map<String,String>> lastSixMonthList = MDateUtils.getLastSixMonth();
+        List<Map<String, String>> lastSixMonthList = MDateUtils.getLastSixMonth();
         try {
             for (int i = 0; i < lastSixMonthList.size(); i++) {
                 Map paramsMap = lastSixMonthList.get(i);
-                TextPage callPage = webClient.getPage(StringFormat.stringFormat(JsChinaMobileUrl.CALL_URL,paramsMap));
-                TextPage messagePage = webClient.getPage(StringFormat.stringFormat(JsChinaMobileUrl.MESSAGE_URL,paramsMap));
-                TextPage netPage = webClient.getPage(StringFormat.stringFormat(JsChinaMobileUrl.NET_URL,paramsMap));
+                TextPage callPage = webClient.getPage(StringFormat.stringFormat(JsChinaMobileUrl.CALL_URL, paramsMap));
+                TextPage messagePage = webClient.getPage(StringFormat.stringFormat(JsChinaMobileUrl.MESSAGE_URL, paramsMap));
+                TextPage netPage = webClient.getPage(StringFormat.stringFormat(JsChinaMobileUrl.NET_URL, paramsMap));
                 String callPageJson = callPage.getContent().toString();
                 String messagePageJson = messagePage.getContent().toString();
                 String netPageJson = netPage.getContent().toString();
 
-                switch (i){
+                switch (i) {
                     case 0:
                         jsCrawlerChinaMobileLog.setCallLogSix(callPageJson);
                         jsCrawlerChinaMobileLog.setMessageLogSix(messagePageJson);

@@ -36,8 +36,8 @@ public class TestController {
     @RequestMapping(value = "/test")
     public String test() throws IOException {
         Map map = new HashMap<>();
-        int i = 0 ;
-        while(i < 100){
+        int i = 0;
+        while (i < 100) {
             i++;
             System.out.println(i);
             final WebClient wc = new WebClient(BrowserVersion.CHROME);
@@ -48,10 +48,11 @@ public class TestController {
             wc.getOptions().setTimeout(10000); // 设置连接超时时间 ，这里是10S。如果为0，则无限期等待
             wc.waitForBackgroundJavaScript(10000);
             HtmlPage loginPage = wc.getPage(JsChinaMobileUrl.LOGIN_URL);
-            map.put(i,wc);
+            map.put(i, wc);
         }
         return "OK";
     }
+
     /**
      * 查询通话记录
      *
@@ -60,8 +61,8 @@ public class TestController {
     @RequestMapping(value = "/test2")
     public String test2() {
         Map map = new HashMap<>();
-        int i = 0 ;
-        while(i < 100){
+        int i = 0;
+        while (i < 100) {
             i++;
             System.out.println(i);
             final WebClient wc = new WebClient(BrowserVersion.CHROME);
@@ -75,7 +76,7 @@ public class TestController {
                 HtmlPage loginPage = wc.getPage(JsChinaMobileUrl.LOGIN_URL);
             } catch (IOException e) {
                 e.printStackTrace();
-            }finally {
+            } finally {
 //                wc.getCurrentWindow().getJobManager().removeAllJobs();
                 wc.close();
 //                System.gc();

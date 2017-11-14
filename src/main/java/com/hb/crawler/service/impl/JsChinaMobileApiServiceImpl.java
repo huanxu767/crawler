@@ -106,7 +106,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         }
         String instanceId = RandomGenerator.generateInstanceId();
 
-        JsChinaCrawlerInstance jsChinaCrawlerInstance = new JsChinaCrawlerInstance(instanceId,mobile,imei);
+        JsChinaCrawlerInstance jsChinaCrawlerInstance = new JsChinaCrawlerInstance(instanceId, mobile, imei);
         jsChinaCrawlerInstanceMapper.addJsChinaCrawlerInstance(jsChinaCrawlerInstance);
 
         resultMap = preLoginProcess(mobile, imei, instanceId);
@@ -209,7 +209,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         jsChinaCrawlerInstance.setPassword(password);
 
         int i = jsChinaCrawlerInstanceMapper.updateJsChinaCrawlerInstance(jsChinaCrawlerInstance);
-        if(i <= 0){
+        if (i <= 0) {
             resultBean.failure(ReturnCode.INSTANCE_ID_NOT_EXSIT);
             return resultBean;
         }
@@ -300,7 +300,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         }
 
         JsChinaCrawlerInstance jsChinaCrawlerInstanceDb = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
-        if(jsChinaCrawlerInstanceDb == null){
+        if (jsChinaCrawlerInstanceDb == null) {
             throw new ResultException(ReturnCode.INSTANCE_ID_NOT_EXSIT);
         }
 
@@ -390,7 +390,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
     public void sendSMSCode(String instanceId) {
 
         JsChinaCrawlerInstance jsChinaCrawlerInstanceDb = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
-        if(jsChinaCrawlerInstanceDb == null){
+        if (jsChinaCrawlerInstanceDb == null) {
             throw new ResultException(ReturnCode.INSTANCE_ID_NOT_EXSIT);
         }
 
@@ -430,7 +430,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
             throw new ResultException(ReturnCode.INSTANCE_ID_NULL);
         }
         JsChinaCrawlerInstance jsChinaCrawlerInstanceDb = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
-        if(jsChinaCrawlerInstanceDb == null){
+        if (jsChinaCrawlerInstanceDb == null) {
             throw new ResultException(ReturnCode.INSTANCE_ID_NOT_EXSIT);
         }
 
@@ -471,18 +471,18 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         String userName = jsChinaCrawlerInstance.getUserName();
         String firstEmergencyContact = jsChinaCrawlerInstance.getFirstEmergencyContact();
         String secondEmergencyContact = jsChinaCrawlerInstance.getSecondEmergencyContact();
-        if(StringUtils.isEmpty(instanceId) || StringUtils.isEmpty(userName) || StringUtils.isEmpty(firstEmergencyContact) || StringUtils.isEmpty(secondEmergencyContact)){
+        if (StringUtils.isEmpty(instanceId) || StringUtils.isEmpty(userName) || StringUtils.isEmpty(firstEmergencyContact) || StringUtils.isEmpty(secondEmergencyContact)) {
             throw new ResultException(ReturnCode.PARAMS_NOT_ENOUGH);
         }
         JsChinaCrawlerInstance jsChinaCrawlerInstanceDb = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
-        if(jsChinaCrawlerInstanceDb == null){
+        if (jsChinaCrawlerInstanceDb == null) {
             throw new ResultException(ReturnCode.INSTANCE_ID_NOT_EXSIT);
         }
-        JsChinaCrawlerInstance jsChinaCrawlerInstanceNew = new JsChinaCrawlerInstance(instanceId,userName,firstEmergencyContact,secondEmergencyContact);
+        JsChinaCrawlerInstance jsChinaCrawlerInstanceNew = new JsChinaCrawlerInstance(instanceId, userName, firstEmergencyContact, secondEmergencyContact);
         jsChinaCrawlerInstanceNew.setStatus("4");
         jsChinaCrawlerInstanceMapper.updateJsChinaCrawlerInstance(jsChinaCrawlerInstanceNew);
         // 异步生成报告
-        JsChinaAnalysisLogThread jsChinaAnalysisLogThread = new JsChinaAnalysisLogThread(instanceId,jsChinaCrawlerInstanceMapper,jsChinaCrawlerCallMapper,jsChinaCrawlerSourceLogMapper,jsChinaCrawlerReportMapper);
+        JsChinaAnalysisLogThread jsChinaAnalysisLogThread = new JsChinaAnalysisLogThread(instanceId, jsChinaCrawlerInstanceMapper, jsChinaCrawlerCallMapper, jsChinaCrawlerSourceLogMapper, jsChinaCrawlerReportMapper);
         Thread jsAnalysisLogThread = new Thread(jsChinaAnalysisLogThread);
         jsAnalysisLogThread.start();
     }
@@ -494,17 +494,17 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
             throw new ResultException(ReturnCode.INSTANCE_ID_NULL);
         }
         JsChinaCrawlerInstance jsChinaCrawlerInstance = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
-        if(jsChinaCrawlerInstance == null){
+        if (jsChinaCrawlerInstance == null) {
             //实例不存在
             throw new ResultException(ReturnCode.INSTANCE_ID_NOT_EXSIT);
         }
         String status = jsChinaCrawlerInstance.getStatus();
-        if(!"4".equals(status)){
+        if (!"4".equals(status)) {
             //流程未走完
             throw new ResultException(ReturnCode.INSTANCE_NOT_END);
         }
         JsChinaCrawlerReport jsChinaCrawlerReport = jsChinaCrawlerReportMapper.queryJsChinaCrawlerReport(instanceId);
-        if(jsChinaCrawlerReport == null){
+        if (jsChinaCrawlerReport == null) {
             //报告尚未完成
             throw new ResultException(ReturnCode.REPORT_NOT_END);
         }

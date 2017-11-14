@@ -27,7 +27,6 @@ public class ReturnCode {
     public static final String PARAMS_FORMAT_ERROR = "10002";
 
 
-
     /**
      * 用户名密码不能为空
      */
@@ -104,7 +103,6 @@ public class ReturnCode {
     public static final String LOGIN_FAILURE = "30000";
 
 
-
     static Map<String, String> codeMap = new HashMap();
 
     static {
@@ -124,7 +122,7 @@ public class ReturnCode {
         codeMap.put(HAS_SMS_CODE_CHECKED, "短信码已验证");
         codeMap.put(INSTANCE_ID_NOT_EXSIT, "实例不存在");
         codeMap.put(INSTANCE_NOT_END, "流程未走完");
-        codeMap.put(REPORT_NOT_END,"数据尚未解析完");
+        codeMap.put(REPORT_NOT_END, "数据尚未解析完");
     }
 
     /**

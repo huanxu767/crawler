@@ -1,7 +1,6 @@
 package com.hb.crawler.listener;
 
 
-
 public interface MyMessageDelegate {
 
     void handleMessage(String message);

@@ -45,7 +45,7 @@ public class JsBrowserCache {
     public static void remove(String instanceId) {
         logger.info("remove:" + instanceId);
         JsBrowserInstance jsBrowserInstance = jsBrowserInstances.get(instanceId);
-        if(jsBrowserInstance == null){
+        if (jsBrowserInstance == null) {
             return;
         }
         WebClient webClient = jsBrowserInstance.getWebClient();

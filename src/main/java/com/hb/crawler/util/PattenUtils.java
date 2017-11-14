@@ -18,28 +18,29 @@ public class PattenUtils {
 
     /**
      * 取字符串中数字
+     *
      * @param msg
      * @return
      */
-    public static String getNumbers(String msg){
+    public static String getNumbers(String msg) {
         String regEx = "[^0-9]";
         Pattern p = Pattern.compile(regEx);
         Matcher m = p.matcher(msg);
         return m.replaceAll("").trim();
     }
 
-    private  static void getDetail(final WebClient webClient){
+    private static void getDetail(final WebClient webClient) {
         String phoneRemain = "";
         String js = "$('.font-pink1').html();";
         try {
             // 取余额
             HtmlPage htmlPage = webClient.getPage("http://www.baidu.com");
-            int j = 1/0;
-        }catch (Exception e){
+            int j = 1 / 0;
+        } catch (Exception e) {
             System.out.println(times);
-            if(--times <=0){
+            if (--times <= 0) {
                 e.printStackTrace();
-            }else{
+            } else {
                 getDetail(webClient);
             }
         }

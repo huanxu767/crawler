@@ -35,6 +35,7 @@ public class JsChinaAnalysisLogThread implements Runnable {
 
     private JsChinaCrawlerReport jsChinaCrawlerReport = new JsChinaCrawlerReport();
     private String instanceId;
+
     public JsChinaAnalysisLogThread(String instanceId, JsChinaCrawlerInstanceMapper jsChinaCrawlerInstanceMapper,
                                     JsChinaCrawlerCallMapper jsChinaCrawlerCallMapper, JsChinaCrawlerSourceLogMapper jsChinaCrawlerSourceLogMapper,
                                     JsChinaCrawlerReportMapper jsChinaCrawlerReportMapper) {
@@ -50,7 +51,7 @@ public class JsChinaAnalysisLogThread implements Runnable {
     public void run() {
         logger.info("生成报告");
         JsChinaCrawlerInstance jsChinaCrawlerInstance = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
-        if(jsChinaCrawlerInstance == null){
+        if (jsChinaCrawlerInstance == null) {
             return;
         }
         String firstEmergencyContact = jsChinaCrawlerInstance.getFirstEmergencyContact();
@@ -60,13 +61,13 @@ public class JsChinaAnalysisLogThread implements Runnable {
         JsChinaCrawlerSourceLog jsCrawlerChinaMobileLog = new JsChinaCrawlerSourceLog();
         for (int i = 0; i < 20; i++) {
             jsCrawlerChinaMobileLog = jsChinaCrawlerSourceLogMapper.queryJsChinaCrawlerSourceLog(instanceId);
-            if(jsCrawlerChinaMobileLog.getUpdateTimes() < 2){
+            if (jsCrawlerChinaMobileLog.getUpdateTimes() < 2) {
                 try {
                     Thread.sleep(sleepTime);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            }else{
+            } else {
                 break;
             }
         }
@@ -77,17 +78,17 @@ public class JsChinaAnalysisLogThread implements Runnable {
         //用户星级
         jsChinaCrawlerReport.setCreditLevel(jsCrawlerChinaMobileLog.getCreditLevel());
         //月账单
-        billMonthBill(jsCrawlerChinaMobileLog,userName);
+        billMonthBill(jsCrawlerChinaMobileLog, userName);
         //是否集团账户
         vNet(jsCrawlerChinaMobileLog);
         //通话记录
-        call(instanceId,jsCrawlerChinaMobileLog);
+        call(instanceId, jsCrawlerChinaMobileLog);
         //短信记录
-        sms(instanceId,jsCrawlerChinaMobileLog);
+        sms(instanceId, jsCrawlerChinaMobileLog);
         //上网记录
-        net(instanceId,jsCrawlerChinaMobileLog);
+        net(instanceId, jsCrawlerChinaMobileLog);
         // 距上次与紧急联系人联系天数
-        String lastDays = queryLastConnectDay(instanceId,firstEmergencyContact,secondEmergencyContact);
+        String lastDays = queryLastConnectDay(instanceId, firstEmergencyContact, secondEmergencyContact);
         jsChinaCrawlerReport.setEmergencyContactDays(objectToInt(lastDays));
         // 总手机通话联系人数
         Long otherParties = jsChinaCrawlerCallMapper.countCallOtherParties(instanceId);
@@ -95,7 +96,8 @@ public class JsChinaAnalysisLogThread implements Runnable {
         offLineDays();
         jsChinaCrawlerReportMapper.addJsChinaCrawlerReport(jsChinaCrawlerReport);
     }
-    void offLineDays(){
+
+    void offLineDays() {
         List<String> countOnLineDays = jsChinaCrawlerCallMapper.queryOnLineDays(instanceId);
         String tempDate = "";
         int sixtyDate = Integer.parseInt(getCurrentYearDays(-60));
@@ -109,11 +111,11 @@ public class JsChinaAnalysisLogThread implements Runnable {
             }
             int days = MDateUtils.betweenDaysNum(date, tempDate);
             // 停机三天 即相差4天
-            int offLineDays = days-1;
-            int dateInt = Integer.parseInt(date.replace("-",""));
+            int offLineDays = days - 1;
+            int dateInt = Integer.parseInt(date.replace("-", ""));
             if (offLineDays > 3) {
                 //60天内
-                if(sixtyDate <= dateInt){
+                if (sixtyDate <= dateInt) {
                     times++;
                 }
                 maxOffLineDays = maxOffLineDays < offLineDays ? offLineDays : maxOffLineDays;
@@ -123,8 +125,9 @@ public class JsChinaAnalysisLogThread implements Runnable {
         jsChinaCrawlerReport.setOfflineDaysTimes(times);
         jsChinaCrawlerReport.setContinuousOfflineDays(maxOffLineDays);
     }
-    String queryLastConnectDay(String instanceId,String firstEmergencyContact,String secondEmergencyContact) {
-        Map map = jsChinaCrawlerCallMapper.queryLastConnectDay(instanceId, firstEmergencyContact,secondEmergencyContact);
+
+    String queryLastConnectDay(String instanceId, String firstEmergencyContact, String secondEmergencyContact) {
+        Map map = jsChinaCrawlerCallMapper.queryLastConnectDay(instanceId, firstEmergencyContact, secondEmergencyContact);
         if (map.isEmpty()) {
             return "9999";
         }
@@ -155,7 +158,6 @@ public class JsChinaAnalysisLogThread implements Runnable {
         gprsBillDetail.remove(0);
         for (Object object : gprsBillDetail) {
             Map tempMap = (Map) object;
-            System.out.println(tempMap);
             JsChinaCrawlerNet jsChinaCrawlerNet = new JsChinaCrawlerNet();
             jsChinaCrawlerNet.setInstanceId(instanceId);
             jsChinaCrawlerNet.setStartTime(tempMap.get("startTime").toString());
@@ -193,7 +195,6 @@ public class JsChinaAnalysisLogThread implements Runnable {
         smsBillDetail.remove(0);
         for (Object object : smsBillDetail) {
             Map tempMap = (Map) object;
-            System.out.println(tempMap);
             JsChinaCrawlerSMS jsChinaCrawlerSMS = new JsChinaCrawlerSMS();
             jsChinaCrawlerSMS.setInstanceId(instanceId);
             jsChinaCrawlerSMS.setStatusType(tempMap.get("statusType").toString());
@@ -208,7 +209,7 @@ public class JsChinaAnalysisLogThread implements Runnable {
         jsChinaCrawlerCallMapper.addJsChinaCrawlerSMSBatch(jsChinaCrawlerSMSs);
     }
 
-    private void billMonthBill(JsChinaCrawlerSourceLog jsChinaCrawlerSourceLog,String userName) {
+    private void billMonthBill(JsChinaCrawlerSourceLog jsChinaCrawlerSourceLog, String userName) {
         //解析 月账单
         Gson gson = new Gson();
         int sumMonthBill = 0;
@@ -244,9 +245,9 @@ public class JsChinaAnalysisLogThread implements Runnable {
         jsChinaCrawlerReport.setMonthAveragePayment(avgMonthBill);
         jsChinaCrawlerReport.setMaxPayment(maxMonthBill);
         jsChinaCrawlerReport.setStandardDeviation(objectToInt(bzc));
-        if(userName.equals(realName)){
+        if (userName.equals(realName)) {
             jsChinaCrawlerReport.setIsRealName("1");
-        }else {
+        } else {
             jsChinaCrawlerReport.setIsRealName("0");
         }
 //        开户时间
@@ -321,7 +322,6 @@ public class JsChinaAnalysisLogThread implements Runnable {
         gsmBillDetail.remove(0);
         for (Object object : gsmBillDetail) {
             Map tempMap = (Map) object;
-            System.out.println(tempMap);
             JsChinaCrawlerCall jsChinaCrawlerCall = new JsChinaCrawlerCall();
             jsChinaCrawlerCall.setInstanceId(instanceId);
             jsChinaCrawlerCall.setCallDuration(tempMap.get("callDuration").toString());
@@ -347,17 +347,17 @@ public class JsChinaAnalysisLogThread implements Runnable {
     }
 
 
-    private static int objectToInt(Object object){
+    private static int objectToInt(Object object) {
         try {
-            if(StringUtils.isEmpty(object)){
+            if (StringUtils.isEmpty(object)) {
                 return 0;
             }
             String num = object.toString();
-            if(num.contains(".")){
-                num = num.substring(0,num.indexOf("."));
+            if (num.contains(".")) {
+                num = num.substring(0, num.indexOf("."));
             }
             return Integer.parseInt(num);
-        }catch (Exception e){
+        } catch (Exception e) {
             return 0;
         }
     }

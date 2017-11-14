@@ -199,12 +199,12 @@ public class JsChinaMobileApiController {
     @RequestMapping("/getVerifyCodeImg/{fileName}.{suffix}")
     public ResponseEntity<byte[]> getVerifyCodeImg(@PathVariable("fileName") String fileName, @PathVariable("suffix") String suffix) throws IOException {
         fileName = fileName + "." + suffix;
-        File file=new File(configProperties.getVerificationCodePath() + fileName);
+        File file = new File(configProperties.getVerificationCodePath() + fileName);
         HttpHeaders headers = new HttpHeaders();
-        fileName=new String(fileName.getBytes("UTF-8"),"iso-8859-1");
+        fileName = new String(fileName.getBytes("UTF-8"), "iso-8859-1");
         headers.setContentDispositionFormData("attachment", fileName);
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        return new ResponseEntity(FileUtils.readFileToByteArray(file),headers, HttpStatus.OK);
+        return new ResponseEntity(FileUtils.readFileToByteArray(file), headers, HttpStatus.OK);
     }
 
 

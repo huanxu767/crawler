@@ -17,7 +17,7 @@ public interface JsChinaMobileApiService {
      *
      * @return
      */
-    Map preLogin(String mobile,String imei);
+    Map preLogin(String mobile, String imei);
 
     /**
      * 登录，并下发短信验证码
@@ -47,12 +47,14 @@ public interface JsChinaMobileApiService {
 
     /**
      * 下发短信码
+     *
      * @param instanceId
      */
     void sendSMSCode(String instanceId);
 
     /**
      * 刷新验证码
+     *
      * @param instanceId
      * @return
      */
@@ -60,12 +62,14 @@ public interface JsChinaMobileApiService {
 
     /**
      * 接受用户基本信息
+     *
      * @param jsChinaCrawlerInstance
      */
     void addCustomerInformation(JsChinaCrawlerInstance jsChinaCrawlerInstance);
 
     /**
      * 查询报告
+     *
      * @param instanceId
      * @return
      */

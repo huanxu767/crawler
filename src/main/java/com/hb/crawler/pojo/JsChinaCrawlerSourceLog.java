@@ -40,11 +40,9 @@ public class JsChinaCrawlerSourceLog {
     private String netLogSix;
 
 
-
     private Date searchTime;
     private int updateTimes;
     private Date createTime;
-
 
 
     public Long getId() {

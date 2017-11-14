@@ -109,8 +109,8 @@ public class RedisUtils {
     }
 
 
-    public void setSerializable(String key,Object object, long expire) {
-        redisSerializerTemplate.opsForValue().set(key,object);
+    public void setSerializable(String key, Object object, long expire) {
+        redisSerializerTemplate.opsForValue().set(key, object);
         if (expire != NOT_EXPIRE) {
             redisTemplate.expire(key, expire, TimeUnit.SECONDS);
         }

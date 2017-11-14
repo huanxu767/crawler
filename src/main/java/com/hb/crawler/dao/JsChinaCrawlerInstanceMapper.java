@@ -34,5 +34,4 @@ public interface JsChinaCrawlerInstanceMapper {
     int updateJsChinaCrawlerInstance(JsChinaCrawlerInstance jsChinaCrawlerInstance);
 
 
-
 }

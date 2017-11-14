@@ -19,7 +19,7 @@ public class StringFormat {
      */
     public static String stringFormat(String sourStr, Map<String, Object> param) {
         String tagerStr = sourStr;
-        if (param == null){
+        if (param == null) {
             return tagerStr;
         }
         matcher = pattern.matcher(tagerStr);

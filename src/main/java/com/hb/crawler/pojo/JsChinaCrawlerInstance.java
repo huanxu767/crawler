@@ -65,6 +65,7 @@ public class JsChinaCrawlerInstance {
     public JsChinaCrawlerInstance() {
 
     }
+
     public JsChinaCrawlerInstance(String instanceId) {
         this.instanceId = instanceId;
     }
@@ -82,7 +83,7 @@ public class JsChinaCrawlerInstance {
         this.secondEmergencyContact = secondEmergencyContact;
         Date date = new Date();
         this.lastUpdateTime = date;
-        this.finishTime =date;
+        this.finishTime = date;
 
     }
 
