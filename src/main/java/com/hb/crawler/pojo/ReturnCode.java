@@ -31,12 +31,12 @@ public class ReturnCode {
     /**
      * 用户名密码不能为空
      */
-    public static final String USER_PWD_IS_NULL = "20001";
+    public static final String USER_PWD_NULL = "20001";
 
     /**
      * 实例编号不能为空
      */
-    public static final String INSTANCE_ID_IS_NULL = "20002";
+    public static final String INSTANCE_ID_NULL = "20002";
 
 
     /**
@@ -47,7 +47,7 @@ public class ReturnCode {
     /**
      * 验证码不能为空
      */
-    public static final String VERIFICATION_CODE_IS_NULL = "20004";
+    public static final String VERIFICATION_CODE_NULL = "20004";
 
 
     /**
@@ -88,7 +88,15 @@ public class ReturnCode {
     /**
      * 实例不存在
      */
-    public static final String INSTANCE_ID_ISNOT_EXSIT = "20012";
+    public static final String INSTANCE_ID_NOT_EXSIT = "20012";
+    /**
+     * 流程尚未走完
+     */
+    public static final String INSTANCE_NOT_END = "20013";
+    /**
+     * 报告尚未生成
+     */
+    public static final String REPORT_NOT_END = "20013";
 
     /**
      * 登录失败 错误描述由页面返回
@@ -104,20 +112,19 @@ public class ReturnCode {
         codeMap.put(UNKNOWN, "未知错误");
         codeMap.put(PARAMS_NOT_ENOUGH, "参数不全");
         codeMap.put(PARAMS_FORMAT_ERROR, "参数格式不正确");
-        codeMap.put(USER_PWD_IS_NULL, "用户名密码不能为空");
-        codeMap.put(INSTANCE_ID_IS_NULL, "实例不能为空");
+        codeMap.put(USER_PWD_NULL, "用户名密码不能为空");
+        codeMap.put(INSTANCE_ID_NULL, "实例不能为空");
         codeMap.put(HAS_LOGIN, "已登录，请不要重复调用");
-        codeMap.put(VERIFICATION_CODE_IS_NULL, "验证码不能为空");
+        codeMap.put(VERIFICATION_CODE_NULL, "验证码不能为空");
         codeMap.put(INSTANCE_ID_EXPIRE, "实例已失效");
         codeMap.put(SMS_CODE_RETRY_TIMES_EXCEEDED, "短信验证码重试次数超过3次");
         codeMap.put(SMS_CODE_PERIOD, "距离上次短信验证码发送间隔30秒");
         codeMap.put(SMS_CODE_RETRY_TIMES_EXCEEDED_PERIOD, "短信验证码重试次数超过3次,并且距离上次短信验证码发送间隔30秒");
         codeMap.put(SMS_CODE_WRONG, "短信验证码验证不正确");
         codeMap.put(HAS_SMS_CODE_CHECKED, "短信码已验证");
-        codeMap.put(INSTANCE_ID_ISNOT_EXSIT, "实例不存在");
-
-
-
+        codeMap.put(INSTANCE_ID_NOT_EXSIT, "实例不存在");
+        codeMap.put(INSTANCE_NOT_END, "流程未走完");
+        codeMap.put(REPORT_NOT_END,"数据尚未解析完");
     }
 
     /**

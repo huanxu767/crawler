@@ -2,6 +2,7 @@ package com.hb.crawler.service;
 
 import com.hb.crawler.pojo.BaseResultBean;
 import com.hb.crawler.pojo.JsChinaCrawlerInstance;
+import com.hb.crawler.pojo.JsChinaCrawlerReport;
 import com.hb.crawler.pojo.LoginForm;
 
 import java.util.Map;
@@ -62,4 +63,11 @@ public interface JsChinaMobileApiService {
      * @param jsChinaCrawlerInstance
      */
     void addCustomerInformation(JsChinaCrawlerInstance jsChinaCrawlerInstance);
+
+    /**
+     * 查询报告
+     * @param instanceId
+     * @return
+     */
+    JsChinaCrawlerReport getReport(String instanceId);
 }

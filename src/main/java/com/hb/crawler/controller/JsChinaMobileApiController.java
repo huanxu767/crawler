@@ -3,6 +3,7 @@ package com.hb.crawler.controller;
 import com.hb.crawler.exception.ResultException;
 import com.hb.crawler.pojo.BaseResultBean;
 import com.hb.crawler.pojo.JsChinaCrawlerInstance;
+import com.hb.crawler.pojo.JsChinaCrawlerReport;
 import com.hb.crawler.pojo.LoginForm;
 import com.hb.crawler.property.ConfigProperties;
 import com.hb.crawler.service.JsChinaMobileApiService;
@@ -166,16 +167,26 @@ public class JsChinaMobileApiController {
     }
 
     /**
-     * 查询通话记录
+     * 查询报告
      *
      * @param instanceId
      * @return
      */
-    @RequestMapping(value = "/getCallRecord")
-    public String getCallRecord(String instanceId) {
-        logger.info("查询通话记录");
-        String pageContent = jsChinaMobileApiService.getCallRecord(instanceId);
-        return pageContent;
+    @RequestMapping(value = "/getReport")
+    public BaseResultBean getReport(String instanceId) {
+        logger.info("查询报告");
+        BaseResultBean bean = new BaseResultBean();
+        try {
+            JsChinaCrawlerReport report = jsChinaMobileApiService.getReport(instanceId);
+            bean.setResult(report.getMap());
+            bean.success();
+        } catch (ResultException e) {
+            bean.failure(e);
+        } catch (Exception e) {
+            bean.failure();
+            logger.error("查询报告", e);
+        }
+        return bean;
     }
 
     /**

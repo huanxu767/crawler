@@ -33,6 +33,9 @@
             <if test="needVerifyCode != null">
                 need_verify_code = #{needVerifyCode},
             </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
             <if test="imei != null">
                 imei = #{imei},
             </if>

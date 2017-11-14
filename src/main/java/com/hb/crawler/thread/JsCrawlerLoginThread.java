@@ -50,7 +50,7 @@ public class JsCrawlerLoginThread implements Runnable {
         String phoneRemain = "";
         String js = "$('.font-pink1').html();";
         String creditLevelFlagJs = "$('#popBox-verifyCode-idType').is(':visible');";
-        String creditLevelJs = "$('#popBox-verifyCode-idType').text();";
+        String creditLevelJs = "$('#creditlevalchinese').text();";
         JsChinaCrawlerSourceLog jsChinaCrawlerSourceLog = new JsChinaCrawlerSourceLog();
         try {
             jsChinaCrawlerSourceLog.setInstanceId(instanceId);
@@ -64,10 +64,12 @@ public class JsCrawlerLoginThread implements Runnable {
 
             ScriptResult creditFlagScriptResult = htmlPage.executeJavaScript(creditLevelFlagJs);
             int creditLevel = 0;
+            System.out.println(creditFlagScriptResult.getJavaScriptResult().toString());
             if(Boolean.parseBoolean(creditFlagScriptResult.getJavaScriptResult().toString())){
                 ScriptResult creditScriptResult = htmlPage.executeJavaScript(creditLevelJs);
                 creditLevel = Integer.parseInt(PattenUtils.getNumbers(creditScriptResult.getJavaScriptResult().toString()));
             }
+
             jsChinaCrawlerSourceLog.setCreditLevel(creditLevel);
 
             // 取近个月花费金额

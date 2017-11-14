@@ -86,7 +86,6 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
 
     @Override
     public Map preLogin(String mobile, String imei) {
-
         Map resultMap;
         // 验证参数
         if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(imei)) {
@@ -189,7 +188,6 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
             resultBean.failure(ReturnCode.PARAMS_NOT_ENOUGH);
             return resultBean;
         }
-
         String instanceId = loginForm.getInstanceId();
         String mobile = loginForm.getMobile();
         String password = loginForm.getPassword();
@@ -197,7 +195,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         String verificationCode = loginForm.getVerificationCode();
         //验证表单数据格式
         if (StringUtils.isEmpty(instanceId)) {
-            resultBean.failure(ReturnCode.INSTANCE_ID_IS_NULL);
+            resultBean.failure(ReturnCode.INSTANCE_ID_NULL);
             return resultBean;
         }
         if (StringUtils.isEmpty(mobile) || StringUtils.isEmpty(password) || StringUtils.isEmpty(imei)) {
@@ -212,7 +210,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
 
         int i = jsChinaCrawlerInstanceMapper.updateJsChinaCrawlerInstance(jsChinaCrawlerInstance);
         if(i <= 0){
-            resultBean.failure(ReturnCode.INSTANCE_ID_ISNOT_EXSIT);
+            resultBean.failure(ReturnCode.INSTANCE_ID_NOT_EXSIT);
             return resultBean;
         }
         // 获取redis是否已经缓存
@@ -237,7 +235,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         JsBrowserInstance jsBrowserInstance = JsBrowserCache.get(instanceId);
         if (jsBrowserInstance.isNeedVerifyCode() && StringUtils.isEmpty(verificationCode)) {
             //需要验证码，但是传过来验证码为空
-            resultBean.failure(ReturnCode.VERIFICATION_CODE_IS_NULL);
+            resultBean.failure(ReturnCode.VERIFICATION_CODE_NULL);
             return resultBean;
         }
         WebClient webClient = jsBrowserInstance.getWebClient();
@@ -303,7 +301,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
 
         JsChinaCrawlerInstance jsChinaCrawlerInstanceDb = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
         if(jsChinaCrawlerInstanceDb == null){
-            throw new ResultException(ReturnCode.INSTANCE_ID_ISNOT_EXSIT);
+            throw new ResultException(ReturnCode.INSTANCE_ID_NOT_EXSIT);
         }
 
         //根据instanceId取手机号
@@ -393,7 +391,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
 
         JsChinaCrawlerInstance jsChinaCrawlerInstanceDb = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
         if(jsChinaCrawlerInstanceDb == null){
-            throw new ResultException(ReturnCode.INSTANCE_ID_ISNOT_EXSIT);
+            throw new ResultException(ReturnCode.INSTANCE_ID_NOT_EXSIT);
         }
 
         //根据instanceId取手机号
@@ -429,11 +427,11 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         Map resultMap = new HashMap();
         //验证参数完整性
         if (StringUtils.isEmpty(instanceId)) {
-            throw new ResultException(ReturnCode.INSTANCE_ID_IS_NULL);
+            throw new ResultException(ReturnCode.INSTANCE_ID_NULL);
         }
         JsChinaCrawlerInstance jsChinaCrawlerInstanceDb = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
         if(jsChinaCrawlerInstanceDb == null){
-            throw new ResultException(ReturnCode.INSTANCE_ID_ISNOT_EXSIT);
+            throw new ResultException(ReturnCode.INSTANCE_ID_NOT_EXSIT);
         }
 
         JsSpiderInstance jsSpiderInstance = redisUtils.get(INSTANCE_KEY + instanceId, JsSpiderInstance.class, PRE_EXPIRE_TIME);
@@ -478,7 +476,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         }
         JsChinaCrawlerInstance jsChinaCrawlerInstanceDb = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
         if(jsChinaCrawlerInstanceDb == null){
-            throw new ResultException(ReturnCode.INSTANCE_ID_ISNOT_EXSIT);
+            throw new ResultException(ReturnCode.INSTANCE_ID_NOT_EXSIT);
         }
         JsChinaCrawlerInstance jsChinaCrawlerInstanceNew = new JsChinaCrawlerInstance(instanceId,userName,firstEmergencyContact,secondEmergencyContact);
         jsChinaCrawlerInstanceNew.setStatus("4");
@@ -487,6 +485,30 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         JsChinaAnalysisLogThread jsChinaAnalysisLogThread = new JsChinaAnalysisLogThread(instanceId,jsChinaCrawlerInstanceMapper,jsChinaCrawlerCallMapper,jsChinaCrawlerSourceLogMapper,jsChinaCrawlerReportMapper);
         Thread jsAnalysisLogThread = new Thread(jsChinaAnalysisLogThread);
         jsAnalysisLogThread.start();
+    }
+
+    @Override
+    public JsChinaCrawlerReport getReport(String instanceId) {
+        if (StringUtils.isEmpty(instanceId)) {
+            //验证参数完整性
+            throw new ResultException(ReturnCode.INSTANCE_ID_NULL);
+        }
+        JsChinaCrawlerInstance jsChinaCrawlerInstance = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
+        if(jsChinaCrawlerInstance == null){
+            //实例不存在
+            throw new ResultException(ReturnCode.INSTANCE_ID_NOT_EXSIT);
+        }
+        String status = jsChinaCrawlerInstance.getStatus();
+        if(!"4".equals(status)){
+            //流程未走完
+            throw new ResultException(ReturnCode.INSTANCE_NOT_END);
+        }
+        JsChinaCrawlerReport jsChinaCrawlerReport = jsChinaCrawlerReportMapper.queryJsChinaCrawlerReport(instanceId);
+        if(jsChinaCrawlerReport == null){
+            //报告尚未完成
+            throw new ResultException(ReturnCode.REPORT_NOT_END);
+        }
+        return jsChinaCrawlerReport;
     }
 
     /**
