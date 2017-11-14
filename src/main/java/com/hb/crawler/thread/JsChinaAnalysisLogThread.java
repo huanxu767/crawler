@@ -86,10 +86,10 @@ public class JsChinaAnalysisLogThread implements Runnable {
         sms(instanceId,jsCrawlerChinaMobileLog);
         //上网记录
         net(instanceId,jsCrawlerChinaMobileLog);
-//        距上次与紧急联系人联系天数
+        // 距上次与紧急联系人联系天数
         String lastDays = queryLastConnectDay(instanceId,firstEmergencyContact,secondEmergencyContact);
         jsChinaCrawlerReport.setEmergencyContactDays(objectToInt(lastDays));
-//        总手机通话联系人数
+        // 总手机通话联系人数
         Long otherParties = jsChinaCrawlerCallMapper.countCallOtherParties(instanceId);
         jsChinaCrawlerReport.setTotalContact(objectToInt(otherParties));
         offLineDays();
@@ -108,13 +108,15 @@ public class JsChinaAnalysisLogThread implements Runnable {
                 continue;
             }
             int days = MDateUtils.betweenDaysNum(date, tempDate);
+            // 停机三天 即相差4天
+            int offLineDays = days-1;
             int dateInt = Integer.parseInt(date.replace("-",""));
-            if (days > 3) {
+            if (offLineDays > 3) {
                 //60天内
                 if(sixtyDate <= dateInt){
                     times++;
                 }
-                maxOffLineDays = maxOffLineDays < days ? days : maxOffLineDays;
+                maxOffLineDays = maxOffLineDays < offLineDays ? offLineDays : maxOffLineDays;
             }
             tempDate = date;
         }

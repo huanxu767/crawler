@@ -109,7 +109,6 @@ public class MDateUtils {
         }
         return 0;
     }
-
     /**
      * 获取时间隔月份取年月
      * @return
@@ -120,6 +119,8 @@ public class MDateUtils {
     }
 
     public static void main(String[] args) {
-        System.out.println(getCurrentYearDays(-60));
+        System.out.println(betweenDaysNum("2017-10-06","2017-09-30"));
+        System.out.println(betweenDaysNum("2017-10-01","2017-09-30"));
+
     }
 }
