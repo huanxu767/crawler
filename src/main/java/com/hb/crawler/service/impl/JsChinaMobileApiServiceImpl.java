@@ -10,6 +10,7 @@ import com.hb.crawler.exception.ResultException;
 import com.hb.crawler.pojo.*;
 import com.hb.crawler.property.ConfigProperties;
 import com.hb.crawler.service.JsChinaMobileApiService;
+import com.hb.crawler.thread.JsChinaAnalysisLogThread;
 import com.hb.crawler.thread.JsCrawlerLoginThread;
 import com.hb.crawler.thread.JsCrawlerSMSThread;
 import com.hb.crawler.thread.JsCrawlerSMSVerifiedThread;
@@ -202,6 +203,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         JsChinaCrawlerInstance jsChinaCrawlerInstance = new JsChinaCrawlerInstance(instanceId);
         jsChinaCrawlerInstance.setLastUpdateTime(new Date());
         jsChinaCrawlerInstance.setStatus("2");
+        jsChinaCrawlerInstance.setPassword(password);
 
         int i = jsChinaCrawlerInstanceMapper.updateJsChinaCrawlerInstance(jsChinaCrawlerInstance);
         if(i <= 0){
@@ -478,7 +480,10 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         jsChinaCrawlerInstanceNew.setStatus("4");
         jsChinaCrawlerInstanceMapper.updateJsChinaCrawlerInstance(jsChinaCrawlerInstanceNew);
 
-
+        // 异步触发短信
+        JsChinaAnalysisLogThread jsChinaAnalysisLogThread = new JsChinaAnalysisLogThread(instanceId,jsChinaCrawlerInstanceMapper);
+        Thread jsAnalysisLogThread = new Thread(jsChinaAnalysisLogThread);
+        jsAnalysisLogThread.start();
 
     }
 

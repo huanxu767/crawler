@@ -19,6 +19,10 @@ public class JsChinaCrawlerInstance {
      * 手机号
      */
     private String mobile;
+    /**
+     * 密码
+     */
+    private String password;
 
     /**
      * 是否需要图形验证码 0 不需要 1 需要
@@ -80,6 +84,14 @@ public class JsChinaCrawlerInstance {
         this.lastUpdateTime = date;
         this.finishTime =date;
 
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getInstanceId() {

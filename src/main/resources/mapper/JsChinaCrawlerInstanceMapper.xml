@@ -6,11 +6,11 @@
 
     <insert id="addJsChinaCrawlerInstance" parameterType="com.hb.crawler.pojo.JsChinaCrawlerInstance" >
     insert into crawler_js_instance (
-      instance_id, mobile, need_verify_code, imei,user_name,
+      instance_id, mobile,password, need_verify_code, imei,user_name,
       first_emergency_contact,second_emergency_contact,last_update_time,finish_time
     )
     values(
-        #{instanceId},#{mobile},#{needVerifyCode},#{imei},#{userName},
+        #{instanceId},#{mobile},#{password},#{needVerifyCode},#{imei},#{userName},
         #{firstEmergencyContact},#{secondEmergencyContact},#{lastUpdateTime},#{finishTime}
     )
     </insert>
@@ -26,6 +26,9 @@
         <set>
             <if test="mobile != null">
                 mobile = #{mobile},
+            </if>
+            <if test="password != null">
+                password = #{password},
             </if>
             <if test="needVerifyCode != null">
                 need_verify_code = #{needVerifyCode},

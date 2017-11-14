@@ -1,31 +1,34 @@
 package com.hb.crawler.thread;
 
-import com.gargoylesoftware.htmlunit.CookieManager;
-import com.gargoylesoftware.htmlunit.TextPage;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.hb.crawler.dao.CrawlerInstanceMapper;
-import com.hb.crawler.pojo.JsChinaMobileUrl;
-import com.hb.crawler.pojo.JsCrawlerChinaMobileLog;
-import com.hb.crawler.util.JsChinaMobileCrawlerUtils;
-import com.hb.crawler.util.MDateUtils;
-import com.hb.crawler.util.StringFormat;
+import com.hb.crawler.dao.JsChinaCrawlerInstanceMapper;
+import com.hb.crawler.pojo.JsChinaCrawlerInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
 
 
 public class JsChinaAnalysisLogThread implements Runnable {
 
     static Logger logger = LoggerFactory.getLogger(JsChinaAnalysisLogThread.class);
 
-
-    public JsChinaAnalysisLogThread() {
+    private JsChinaCrawlerInstanceMapper jsChinaCrawlerInstanceMapper;
+    private String instanceId;
+    public JsChinaAnalysisLogThread(String instanceId,JsChinaCrawlerInstanceMapper jsChinaCrawlerInstanceMapper) {
+        this.jsChinaCrawlerInstanceMapper = jsChinaCrawlerInstanceMapper;
+        this.instanceId = instanceId;
     }
 
     @Override
     public void run() {
+        JsChinaCrawlerInstance jsChinaCrawlerInstance = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
+        if(jsChinaCrawlerInstance == null){
+            return;
+        }
+        String firstEmergencyContact = jsChinaCrawlerInstance.getFirstEmergencyContact();
+        String secondEmergencyContact = jsChinaCrawlerInstance.getSecondEmergencyContact();
+        String userName = jsChinaCrawlerInstance.getUserName();
+
+
     }
 
 
