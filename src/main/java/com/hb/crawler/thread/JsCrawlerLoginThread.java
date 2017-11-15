@@ -49,7 +49,7 @@ public class JsCrawlerLoginThread implements Runnable {
     private void getDetail(WebClient webClient) {
         String phoneRemain = "";
         String js = "$('.font-pink1').html();";
-        String creditLevelFlagJs = "$('#popBox-verifyCode-idType').is(':visible');";
+        String creditLevelFlagJs = "$('#creditlevalchinese').is(':visible');";
         String creditLevelJs = "$('#creditlevalchinese').text();";
         JsChinaCrawlerSourceLog jsChinaCrawlerSourceLog = new JsChinaCrawlerSourceLog();
         try {
