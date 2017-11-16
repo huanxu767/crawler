@@ -128,7 +128,7 @@ public class JsChinaAnalysisLogThread implements Runnable {
 
     String queryLastConnectDay(String instanceId, String firstEmergencyContact, String secondEmergencyContact) {
         Map map = jsChinaCrawlerCallMapper.queryLastConnectDay(instanceId, firstEmergencyContact, secondEmergencyContact);
-        if (map.isEmpty()) {
+        if (map == null || map.isEmpty()) {
             return "9999";
         }
         String startTime = map.get("start_time").toString();
@@ -342,7 +342,6 @@ public class JsChinaAnalysisLogThread implements Runnable {
             jsChinaCrawlerCall.setVisitArear(tempMap.get("visitArear").toString());
             jsChinaCrawlerCalls.add(jsChinaCrawlerCall);
         }
-
         jsChinaCrawlerCallMapper.addJsChinaCrawlerCallBatch(jsChinaCrawlerCalls);
     }
 
