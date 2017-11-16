@@ -1,10 +1,8 @@
 import com.google.gson.Gson;
 import com.hb.crawler.dao.JsChinaCrawlerCallMapper;
+import com.hb.crawler.dao.JsChinaCrawlerReportMapper;
 import com.hb.crawler.dao.JsChinaCrawlerSourceLogMapper;
-import com.hb.crawler.pojo.JsChinaCrawlerCall;
-import com.hb.crawler.pojo.JsChinaCrawlerNet;
-import com.hb.crawler.pojo.JsChinaCrawlerSMS;
-import com.hb.crawler.pojo.JsChinaCrawlerSourceLog;
+import com.hb.crawler.pojo.*;
 import com.hb.crawler.util.MDateUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +29,16 @@ public class AnalysisDataTest {
     @Autowired
     private JsChinaCrawlerCallMapper jsChinaCrawlerCallMapper;
 
+    @Autowired
+    private JsChinaCrawlerReportMapper jsChinaCrawlerReportMapper;
+    @Test
+    public void getIm(){
+//        Map map = jsChinaCrawlerCallMapper.queryLastConnectDay("5ff87bfb231147c5a9916c49728d1f62","11111111111", "11111111111");
+//        System.out.println(map);
+
+        JsChinaCrawlerReport jsChinaCrawlerReport = jsChinaCrawlerReportMapper.queryJsChinaCrawlerReport("5ff87bfb231147c5a9916c49728d1f62");
+        System.out.println(jsChinaCrawlerReport);
+    }
     @Test
     public void analysisDataTest() {
         String instanceId = "f2a2af1bbbc0478a9f4de9c1ccd7c5b7";
