@@ -50,7 +50,7 @@ public class ReturnCode {
 
 
     /**
-     * 实例不存在
+     * 实例过期
      */
     public static final String INSTANCE_ID_EXPIRE = "20005";
 
@@ -95,7 +95,7 @@ public class ReturnCode {
     /**
      * 报告尚未生成
      */
-    public static final String REPORT_NOT_END = "20013";
+    public static final String REPORT_NOT_END = "20014";
 
     /**
      * 登录失败 错误描述由页面返回
