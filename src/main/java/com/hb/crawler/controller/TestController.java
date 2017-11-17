@@ -5,6 +5,7 @@ import com.gargoylesoftware.htmlunit.ScriptResult;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.hb.crawler.pojo.JsChinaMobileUrl;
+import com.hb.crawler.util.JsBrowserCache;
 import com.hb.crawler.util.RedisUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -22,10 +25,18 @@ public class TestController {
     static Logger logger = LoggerFactory.getLogger(TestController.class);
 
     @RequestMapping(value = "/ddd")
-    public String ddd(int x) {
-        Map map = new HashMap<>();
-        int i = 0 ;
-        while(i < x){
+    public String ddd(int x, int y) {
+        logger.info("test",x,y);
+        List<WebClient> list = new ArrayList<WebClient>();
+        int i = 0;
+        while (i < x) {
+            if (i > y) {
+                WebClient wc = list.get(0);
+                HtmlPage h = (HtmlPage) wc.getCurrentWindow().getEnclosedPage();
+                System.out.println("remove:" + h.getTitleText());
+                wc.close();
+                list.remove(0);
+            }
             i++;
             System.out.println(i);
             final WebClient wc = new WebClient(BrowserVersion.CHROME);
@@ -48,23 +59,22 @@ public class TestController {
 //                }else{
 //                    System.out.println("失败");
 //                }
-            }catch (Exception e){
+                list.add(wc);
+            } catch (Exception e) {
                 e.printStackTrace();
-            }finally {
+            } finally {
 //                wc.close();
             }
-            map.put(i,wc);
         }
         return "OK";
     }
 
 
-
     @RequestMapping(value = "/getImg")
     public String test2() {
         Map map = new HashMap<>();
-        int i = 0 ;
-        while(i < 100){
+        int i = 0;
+        while (i < 100) {
             i++;
             System.out.println(i);
             final WebClient wc = new WebClient(BrowserVersion.CHROME);
@@ -81,17 +91,17 @@ public class TestController {
                         "$('#popBox-login-button').click();";
                 ScriptResult scriptResult = loginPage.executeJavaScript(js);
                 final HtmlPage homePage = (HtmlPage) scriptResult.getNewPage();
-                if(!homePage.getTitleText().contains("登录")){
+                if (!homePage.getTitleText().contains("登录")) {
                     System.out.println("成功");
-                }else{
+                } else {
                     System.out.println("失败");
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
-            }finally {
+            } finally {
                 wc.close();
             }
-            map.put(i,wc);
+            map.put(i, wc);
         }
 
         return "OK";

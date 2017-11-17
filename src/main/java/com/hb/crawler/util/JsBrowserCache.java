@@ -18,6 +18,11 @@ public class JsBrowserCache {
 
     private static Map<String, JsBrowserInstance> jsBrowserInstances = new HashMap<>();
 
+
+    public static int countWebClient(){
+        return jsBrowserInstances.size();
+    }
+
     public static void put(JsBrowserInstance jsBrowserInstance) {
         logger.info("put:" + jsBrowserInstance.getInstanceId());
         jsBrowserInstances.put(jsBrowserInstance.getInstanceId(), jsBrowserInstance);
@@ -54,4 +59,5 @@ public class JsBrowserCache {
         jsBrowserInstances.remove(instanceId);
         System.gc();
     }
+
 }
