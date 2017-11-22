@@ -19,11 +19,11 @@ import java.security.SecureRandom;
 public class DesUtils {
 
     private final static String DES = "DES";
-    private final static String ENCODE = "GBK";
-    private final static String defaultKey = "123456789";
+    private final static String ENCODE = "UTF-8";
+    private final static String defaultKey = "1234567890";
 
     public static void main(String[] args) throws Exception {
-        String data = "006235";
+        String data = "456123";
         // System.err.println(encrypt(data, key));
         // System.err.println(decrypt(encrypt(data, key), key));
         System.out.println(encrypt(data));
