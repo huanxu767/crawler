@@ -1446,7 +1446,7 @@ $.extend(loginComponent, {
         if (loginType == '1') {
             if (href.indexOf('=') > 0){
                 if(href.indexOf('LAN_HOME') != -1 || href.indexOf('PHONE_HOME') != -1 || href.indexOf('AGENT') != -1 || href.indexOf('XXT') != -1){
-                    $("#redirectUrl").val("index.html");
+                        $("#redirectUrl").val("index.html");
                 }else{
 //                if (href.indexOf("&") > 0) {
 //                    var temp = href.substring(href.indexOf("=") + 1, href.indexOf("&"));
