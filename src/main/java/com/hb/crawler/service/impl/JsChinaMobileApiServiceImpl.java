@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 江苏移动爬虫接口实现Version2
+ * 江苏移动爬虫接口实现
  */
 @Service
 public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
@@ -74,7 +74,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
     /**
      * cookies缓存时间 3分钟
      */
-    private Long COOKIES_TIME = 60 * 30L;
+    private Long COOKIES_TIME = 60 * 80L;
 
     @Override
     public Map preLogin(String mobile, String imei) {
@@ -100,6 +100,8 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         jsChinaCrawlerInstanceMapper.addJsChinaCrawlerInstance(jsChinaCrawlerInstance);
         resultMap = preLoginProcess(mobile, imei, instanceId);
         resultMap.put("instanceId", instanceId);
+        resultMap.put("needPassword",true);
+        resultMap.put("needSMSCode",false);
         return resultMap;
     }
 
@@ -135,7 +137,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
                 logger.debug(jsBrowserInstance.getInstanceId() + ":不需要需要验证码");
             }
             jsChinaCrawlerInstanceMapper.updateJsChinaCrawlerInstance(jsChinaCrawlerInstance);
-            resultMap.put("verificationCodeURL", path);
+            resultMap.put("verificationCodeURL",configProperties.getLocalhostUrl(path));
             JsSpiderInstance jsSpiderInstance = new JsSpiderInstance(instanceId, verificationCodeFlag, imei, mobile, 1);
             redisUtils.set(MOBILE_KEY + mobile + imei, instanceId, PRE_EXPIRE_TIME);
             redisUtils.set(INSTANCE_KEY + instanceId, jsSpiderInstance, PRE_EXPIRE_TIME);
@@ -169,6 +171,8 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         Map resultMap = new HashMap();
         resultMap.put("verificationCodeFlag", false);
         resultMap.put("verificationCodeURL", "");
+        resultMap.put("operators", "CMCC");
+        resultMap.put("needSendSMS", true);
         resultBean.setResult(resultMap);
         if (loginForm == null) {
             resultBean.failure(ReturnCode.PARAMS_NOT_ENOUGH);
@@ -232,9 +236,8 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
             WebRequest request = new WebRequest(new URL(url));
             request.setAdditionalHeader("Referer", "http://service.js.10086.cn/login.html");
             HtmlPage htmlPage = webClient.getPage(request);
-            String content = htmlPage.asText();
+            String content = htmlPage.asXml();
             resultCode = content.substring(content.indexOf("resultCode=") + 11, content.indexOf(";") - 1);
-            System.out.println("resultCode:" + resultCode);
         } catch (FailingHttpStatusCodeException e) {
             if (e.getStatusCode() == 302) {
                 loginSuccess = true;
@@ -246,7 +249,6 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
             //登录失败
             webClient.close();
             resultMap = preLoginProcess(mobile, imei, instanceId);
-            resultMap.put("instanceId", instanceId);
             resultBean.failure(ReturnCode.LOGIN_FAILURE, ReturnCode.getLoginErrorDefine(resultCode));
             resultBean.setResult(resultMap);
             return resultBean;
@@ -254,7 +256,13 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         redisUtils.setSerializable(COOKIES + instanceId, webClient.getCookieManager(), 5 * 60);
         jsSpiderInstance.setStep(2);
         redisUtils.set(INSTANCE_KEY + instanceId, jsSpiderInstance, PRE_EXPIRE_TIME);
-
+//        TextPage page = null;
+//        try {
+//            page = (TextPage) webClient.getPage("http://service.js.10086.cn/my/actionDispatcher.do?reqUrl=MY_QDCXQueryNew&busiNum=QDCX&queryMonth=201710&queryItem=1&qryPages=1:1002:-1&qryNo=1&operType=3&queryBeginTime=2017-10-01&queryEndTime=2017-10-30");
+//            page.getContent();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         JsBrowserInstance jsBrowserInstance = new JsBrowserInstance();
         jsBrowserInstance.setInstanceId(instanceId);
         jsBrowserInstance.setWebClient(webClient);
@@ -281,23 +289,17 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         if (StringUtils.isEmpty(instanceId) || StringUtils.isEmpty(smsCode)) {
             throw new ResultException(ReturnCode.PARAMS_NOT_ENOUGH);
         }
-
         JsChinaCrawlerInstance jsChinaCrawlerInstanceDb = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
         if (jsChinaCrawlerInstanceDb == null) {
             throw new ResultException(ReturnCode.INSTANCE_ID_NOT_EXSIT);
         }
-
         //根据instanceId取手机号
         JsSpiderInstance jsSpiderInstance = redisUtils.get(INSTANCE_KEY + instanceId, JsSpiderInstance.class, LOGIN_SUCCESS_TIME);
-
         if (jsSpiderInstance == null || !JsBrowserCache.hasKey(instanceId)) {
             //超过6分钟 失效 请重新登陆
             throw new ResultException(ReturnCode.INSTANCE_ID_EXPIRE);
         }
         Long retryTimes = redisUtils.increment(TIMES + instanceId, LOGIN_SUCCESS_TIME);
-
-        //刷新手机时间
-//        redisUtils.expire(INSTANCE_KEY + mobile,LOGIN_SUCCESS_TIME);
         JsBrowserInstance jsBrowserInstance = JsBrowserCache.get(instanceId);
         WebClient webClient = jsBrowserInstance.getWebClient();
         WebWindow currentWindow = webClient.getCurrentWindow();
