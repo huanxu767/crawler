@@ -32,9 +32,9 @@ import java.util.Map;
  * 江苏移动爬虫接口实现Version2
  */
 @Service
-public class JsChinaMobileApiV2ServiceImpl implements JsChinaMobileApiService {
+public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
 
-    static Logger logger = LoggerFactory.getLogger(JsChinaMobileApiV2ServiceImpl.class);
+    static Logger logger = LoggerFactory.getLogger(JsChinaMobileApiServiceImpl.class);
     @Autowired
     private ConfigProperties configProperties;
     @Autowired
