@@ -3,7 +3,6 @@ package com.hb.crawler.service.impl;
 import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.HtmlImage;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.hb.crawler.dao.JsChinaCrawlerCallMapper;
 import com.hb.crawler.dao.JsChinaCrawlerInstanceMapper;
 import com.hb.crawler.dao.JsChinaCrawlerReportMapper;
@@ -32,48 +31,38 @@ import java.util.Map;
 /**
  * 江苏移动爬虫接口实现Version2
  */
-@Service("jsChinaMobileApiV2ServiceImpl")
+@Service
 public class JsChinaMobileApiV2ServiceImpl implements JsChinaMobileApiService {
 
     static Logger logger = LoggerFactory.getLogger(JsChinaMobileApiV2ServiceImpl.class);
-
     @Autowired
     private ConfigProperties configProperties;
     @Autowired
     private JsChinaCrawlerSourceLogMapper jsChinaCrawlerSourceLogMapper;
-
     @Autowired
     private JsChinaCrawlerInstanceMapper jsChinaCrawlerInstanceMapper;
     @Autowired
     private JsChinaCrawlerReportMapper jsChinaCrawlerReportMapper;
-
     @Autowired
     private JsChinaCrawlerCallMapper jsChinaCrawlerCallMapper;
-
     @Autowired
     private RedisUtils redisUtils;
-
     /**
      * webClient缓存前缀
      */
     public final static String MOBILE_KEY = "webClient:mobile:";
-
     /**
      * 实例编号前缀
      */
     public final static String INSTANCE_KEY = "webClient:instanceId:";
-
     /**
      * 短信验证码 验证次数前缀
      */
     public final static String TIMES = "webClient:times:";
-
-
     /**
      * cookies缓存前缀
      */
     private final static String COOKIES = "cookies:";
-
     /**
      * 预登录缓存时间 3分钟
      */
@@ -313,7 +302,6 @@ public class JsChinaMobileApiV2ServiceImpl implements JsChinaMobileApiService {
         WebClient webClient = jsBrowserInstance.getWebClient();
         WebWindow currentWindow = webClient.getCurrentWindow();
         HtmlPage htmlPage = (HtmlPage) currentWindow.getEnclosedPage();
-
         if (retryTimes >= 3) {
             redisUtils.set(TIMES + instanceId, 0);
             //验证码重试次数超过3次 重新下发验证码  并初始化次数
@@ -385,10 +373,8 @@ public class JsChinaMobileApiV2ServiceImpl implements JsChinaMobileApiService {
         if (jsChinaCrawlerInstanceDb == null) {
             throw new ResultException(ReturnCode.INSTANCE_ID_NOT_EXSIT);
         }
-
         //根据instanceId取手机号
         JsSpiderInstance jsSpiderInstance = redisUtils.get(INSTANCE_KEY + instanceId, JsSpiderInstance.class, LOGIN_SUCCESS_TIME);
-
         //如果cookies已存在，则已短信验证通过
         CookieManager cookieManager = (CookieManager) redisUtils.getSerializable(COOKIES + instanceId, LOGIN_SUCCESS_TIME);
         if (cookieManager != null) {
@@ -411,7 +397,6 @@ public class JsChinaMobileApiV2ServiceImpl implements JsChinaMobileApiService {
         ScriptResult afterSendResult = htmlPage.executeJavaScript("$('.send').click();");
         waitForJsExcuse(afterSendResult, 2000);
         redisUtils.set(TIMES + instanceId, 0, LOGIN_SUCCESS_TIME);
-
     }
 
     @Override
@@ -425,35 +410,21 @@ public class JsChinaMobileApiV2ServiceImpl implements JsChinaMobileApiService {
         if (jsChinaCrawlerInstanceDb == null) {
             throw new ResultException(ReturnCode.INSTANCE_ID_NOT_EXSIT);
         }
-
         JsSpiderInstance jsSpiderInstance = redisUtils.get(INSTANCE_KEY + instanceId, JsSpiderInstance.class, PRE_EXPIRE_TIME);
-        JsBrowserInstance jsBrowserInstance = JsBrowserCache.get(instanceId);
-
-        if (jsSpiderInstance == null || jsBrowserInstance == null) {
+        CookieManager cookieManager = (CookieManager) redisUtils.getSerializable(COOKIES + instanceId, PRE_EXPIRE_TIME);
+        if (jsSpiderInstance == null || cookieManager == null) {
             throw new ResultException(ReturnCode.INSTANCE_ID_EXPIRE);
         }
-        if (!jsBrowserInstance.isNeedVerifyCode()) {
-            //不需要验证码
-            throw new ResultException(ReturnCode.NO_NEED_VERIFICATION_CODE);
-        }
-        redisUtils.expire(MOBILE_KEY + jsSpiderInstance.getMobile() + jsSpiderInstance.getImei(), PRE_EXPIRE_TIME);
-        WebClient webClient = jsBrowserInstance.getWebClient();
-        WebWindow currentWindow = webClient.getCurrentWindow();
-        HtmlPage homePage = (HtmlPage) currentWindow.getEnclosedPage();
-        if (!homePage.getTitleText().contains("登录")) {
+        if (jsSpiderInstance.getStep() != 1) {
             //当前非登录页面
             throw new ResultException(ReturnCode.HAS_LOGIN);
         }
-        String js = "loginComponent.changeVerifyCode('');";
-        ScriptResult afterSendResult = homePage.executeJavaScript(js);
-        waitForJsExcuse(afterSendResult, 2000);
-
-        String path = RandomGenerator.timeId() + ".png";
-        String verificationCodeURL = configProperties.getVerificationCodePath() + path;
-        HtmlImage verificationCodeImg = (HtmlImage) homePage.getElementById("vcimg");
-        FileUtils.downLoadImage(verificationCodeImg, verificationCodeURL);
-        resultMap.put("verificationCodeFlag", true);
-        resultMap.put("verificationCodeURL", path);
+        if (!jsSpiderInstance.isNeedVerifyCode()) {
+            //不需要验证码
+            throw new ResultException(ReturnCode.NO_NEED_VERIFICATION_CODE);
+        }
+        Map map = preLoginProcess(jsChinaCrawlerInstanceDb.getMobile(), jsChinaCrawlerInstanceDb.getImei(), instanceId);
+        resultMap.putAll(map);
         return resultMap;
     }
 
