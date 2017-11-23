@@ -2,7 +2,6 @@ package com.hb.crawler.util;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.hb.crawler.pojo.JsBrowserInstance;
-import com.hb.crawler.service.impl.JsChinaMobileApiServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

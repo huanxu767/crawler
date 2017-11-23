@@ -8,7 +8,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.hb.crawler.dao.JsChinaCrawlerSourceLogMapper;
 import com.hb.crawler.pojo.JsChinaCrawlerSourceLog;
 import com.hb.crawler.pojo.JsChinaMobileUrl;
-import com.hb.crawler.service.impl.JsChinaMobileApiServiceImpl;
 import com.hb.crawler.util.JsChinaMobileCrawlerUtils;
 import com.hb.crawler.util.MDateUtils;
 import com.hb.crawler.util.PattenUtils;
@@ -19,7 +18,7 @@ import org.springframework.util.StringUtils;
 
 public class JsCrawlerLoginThread implements Runnable {
 
-    static Logger logger = LoggerFactory.getLogger(JsChinaMobileApiServiceImpl.class);
+    static Logger logger = LoggerFactory.getLogger(JsCrawlerLoginThread.class);
 
     /**
      * 程序出错重试次数

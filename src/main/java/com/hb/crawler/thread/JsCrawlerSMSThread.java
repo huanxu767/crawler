@@ -4,7 +4,6 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.hb.crawler.pojo.JsBrowserInstance;
 import com.hb.crawler.pojo.JsChinaMobileUrl;
-import com.hb.crawler.service.impl.JsChinaMobileApiServiceImpl;
 import com.hb.crawler.util.JsBrowserCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 public class JsCrawlerSMSThread implements Runnable {
 
-    static Logger logger = LoggerFactory.getLogger(JsChinaMobileApiServiceImpl.class);
+    static Logger logger = LoggerFactory.getLogger(JsCrawlerSMSThread.class);
     private String instanceId;
 
     public JsCrawlerSMSThread(String instanceId) {
@@ -30,6 +29,8 @@ public class JsCrawlerSMSThread implements Runnable {
      * 发送短信
      */
     void smsAuthorization(WebClient webClient) {
+        webClient.getOptions().setJavaScriptEnabled(true);
+        webClient.getOptions().setRedirectEnabled(true);
         String js = "$('#txtToDate').next('a').click();";
         HtmlPage page;
         try {
@@ -42,6 +43,4 @@ public class JsCrawlerSMSThread implements Runnable {
             logger.error("发送短信验证码", e);
         }
     }
-
-
 }

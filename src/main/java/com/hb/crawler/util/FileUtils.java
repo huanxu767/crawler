@@ -24,6 +24,7 @@ public class FileUtils {
             JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(fos);
             encoder.encode(bufferedImage);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("图片写入磁盘出错");
         } finally {
             if (fos != null) {

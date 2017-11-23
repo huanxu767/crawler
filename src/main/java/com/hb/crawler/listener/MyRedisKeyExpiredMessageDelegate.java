@@ -1,7 +1,7 @@
 package com.hb.crawler.listener;
 
 
-import com.hb.crawler.service.impl.JsChinaMobileApiServiceImpl;
+import com.hb.crawler.service.impl.JsChinaMobileApiV2ServiceImpl;
 import com.hb.crawler.util.JsBrowserCache;
 
 
@@ -9,7 +9,7 @@ public class MyRedisKeyExpiredMessageDelegate implements MyMessageDelegate {
 
     @Override
     public void handleMessage(String message) {
-        if (message.startsWith(JsChinaMobileApiServiceImpl.INSTANCE_KEY)) {
+        if (message.startsWith(JsChinaMobileApiV2ServiceImpl.INSTANCE_KEY)) {
             String[] key = message.split(":");
             JsBrowserCache.remove(key[key.length - 1]);
         }
