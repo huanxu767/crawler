@@ -18,8 +18,7 @@ import org.springframework.util.StringUtils;
 
 public class JsCrawlerLoginThread implements Runnable {
 
-    static Logger logger = LoggerFactory.getLogger(JsCrawlerLoginThread.class);
-
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     /**
      * 程序出错重试次数
      */

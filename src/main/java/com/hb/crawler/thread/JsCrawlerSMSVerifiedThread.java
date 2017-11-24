@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class JsCrawlerSMSVerifiedThread implements Runnable {
 
-    static Logger logger = LoggerFactory.getLogger(JsCrawlerSMSVerifiedThread.class);
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * 程序出错重试次数

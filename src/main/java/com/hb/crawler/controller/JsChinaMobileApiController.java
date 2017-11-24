@@ -27,7 +27,7 @@ import java.util.Map;
 @RequestMapping("/api/jsChinaMobile")
 public class JsChinaMobileApiController {
 
-    static Logger logger = LoggerFactory.getLogger(JsChinaMobileApiController.class);
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private JsChinaMobileApiService jsChinaMobileApiService;
@@ -42,7 +42,7 @@ public class JsChinaMobileApiController {
      */
     @RequestMapping(value = "preLogin")
     public BaseResultBean preLogin(String mobile, String imei) {
-        logger.info("预登录", mobile, imei);
+        logger.info("预登录,mobile[{}]imei[{}]", mobile, imei);
         BaseResultBean bean = new BaseResultBean();
         bean.success();
         try {
@@ -65,7 +65,7 @@ public class JsChinaMobileApiController {
      */
     @RequestMapping(value = "/refreshVerificationCode")
     public BaseResultBean refreshVerificationCode(String instanceId) {
-        logger.info("刷新验证码", instanceId);
+        logger.info("刷新验证码,instanceId[{}]", instanceId);
         BaseResultBean bean = new BaseResultBean();
         bean.success();
         try {
@@ -88,7 +88,7 @@ public class JsChinaMobileApiController {
      */
     @RequestMapping(value = "login")
     public BaseResultBean login(LoginForm loginForm) {
-        logger.info("登录", loginForm);
+        logger.info("登录,loginForm[{}]", loginForm.toString());
         BaseResultBean bean = new BaseResultBean();
         try {
             bean = jsChinaMobileApiService.login(loginForm);
@@ -107,7 +107,7 @@ public class JsChinaMobileApiController {
      */
     @RequestMapping(value = "/validateSMSCode")
     public BaseResultBean validateSMSCode(String instanceId, String smsCode) {
-        logger.info("验证短信验证码", instanceId, smsCode);
+        logger.info("验证短信验证码,instanceId[{}]smsCode[{}]", instanceId, smsCode);
         BaseResultBean bean = new BaseResultBean();
         bean.success();
         try {
@@ -129,7 +129,7 @@ public class JsChinaMobileApiController {
      */
     @RequestMapping(value = "/sendSMSCode")
     public BaseResultBean sendSMSCode(String instanceId) {
-        logger.info("重新下发短信码", instanceId);
+        logger.info("重新下发短信码,instanceId[{}]", instanceId);
         BaseResultBean bean = new BaseResultBean();
         try {
             jsChinaMobileApiService.sendSMSCode(instanceId);
@@ -151,7 +151,7 @@ public class JsChinaMobileApiController {
      */
     @RequestMapping(value = "/customerInformation")
     public BaseResultBean customerInformation(JsChinaCrawlerInstance jsChinaCrawlerInstance) {
-        logger.info("接受用户填写基本信息", jsChinaCrawlerInstance);
+        logger.info("接受用户填写基本信息,jsChinaCrawlerInstance[{}]", jsChinaCrawlerInstance.toString());
         BaseResultBean bean = new BaseResultBean();
         try {
             jsChinaMobileApiService.addCustomerInformation(jsChinaCrawlerInstance);
@@ -173,7 +173,7 @@ public class JsChinaMobileApiController {
      */
     @RequestMapping(value = "/getReport")
     public BaseResultBean getReport(String instanceId) {
-        logger.info("查询报告");
+        logger.info("查询报告,instanceId[{}]", instanceId);
         BaseResultBean bean = new BaseResultBean();
         try {
             JsChinaCrawlerReport report = jsChinaMobileApiService.getReport(instanceId);

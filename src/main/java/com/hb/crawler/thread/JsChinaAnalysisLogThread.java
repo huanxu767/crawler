@@ -21,7 +21,7 @@ import static com.hb.crawler.util.MDateUtils.getCurrentYearDays;
 
 public class JsChinaAnalysisLogThread implements Runnable {
 
-    static Logger logger = LoggerFactory.getLogger(JsChinaAnalysisLogThread.class);
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final static Long sleepTime = 1000 * 20L;
     private JsChinaCrawlerInstanceMapper jsChinaCrawlerInstanceMapper;
@@ -48,7 +48,7 @@ public class JsChinaAnalysisLogThread implements Runnable {
 
     @Override
     public void run() {
-        logger.info("生成报告");
+        logger.info("生成报告,instance[{}]",instanceId);
         JsChinaCrawlerInstance jsChinaCrawlerInstance = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
         if (jsChinaCrawlerInstance == null) {
             return;

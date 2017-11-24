@@ -19,7 +19,7 @@ import java.util.Map;
 @RequestMapping("/")
 public class TestController {
 
-    static Logger logger = LoggerFactory.getLogger(TestController.class);
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @RequestMapping(value = "/ddd")
     public String ddd(int x, int y) {

@@ -20,7 +20,6 @@ public class FileUtils {
 
     static Logger logger = LoggerFactory.getLogger(FileUtils.class);
 
-
     public static void downLoadImage(HtmlImage verificationCodeImg, String path) {
         FileOutputStream fos = null;
         try {

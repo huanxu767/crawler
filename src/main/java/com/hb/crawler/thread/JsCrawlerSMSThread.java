@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 public class JsCrawlerSMSThread implements Runnable {
 
-    static Logger logger = LoggerFactory.getLogger(JsCrawlerSMSThread.class);
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     private String instanceId;
 
     public JsCrawlerSMSThread(String instanceId) {

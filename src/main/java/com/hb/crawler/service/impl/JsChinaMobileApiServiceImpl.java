@@ -35,7 +35,7 @@ import java.util.Map;
 @Service
 public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
 
-    static Logger logger = LoggerFactory.getLogger(JsChinaMobileApiServiceImpl.class);
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private ConfigProperties configProperties;
     @Autowired
@@ -245,7 +245,8 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         // 是否需要发送短信验证码
         boolean needSendSMS = isNeedSendSMS(webClient);
         resultMap.put("needSendSMS", needSendSMS);
-        logger.info("是否短信验证码登录",instanceId,needSendSMS);
+        resultBean.setResult(resultMap);
+        logger.info("是否短信验证码登录"+instanceId + needSendSMS);
         // 浏览器缓存
         JsBrowserCache.put(instanceId,webClient);
         CookieManager hasLoginCookieManager = (CookieManager) redisUtils.getSerializable(COOKIES + instanceId, PRE_EXPIRE_TIME);
@@ -557,4 +558,5 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         String flag = scriptResult.getJavaScriptResult().toString();
         return Boolean.parseBoolean(flag);
     }
+
 }
