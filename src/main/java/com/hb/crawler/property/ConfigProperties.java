@@ -1,20 +1,27 @@
 package com.hb.crawler.property;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
  * Created by xuhuan
  */
-@Component("configProperties")
 public class ConfigProperties {
 
-    @Value("${verificationCode.path}")
     private String verificationCodePath;
 
-    @Value("${localhost.url}")
     private String localhostUrl;
+
+    public void setVerificationCodePath(String verificationCodePath) {
+        this.verificationCodePath = verificationCodePath;
+    }
+
+    public String getLocalhostUrl() {
+        return localhostUrl;
+    }
+
+    public void setLocalhostUrl(String localhostUrl) {
+        this.localhostUrl = localhostUrl;
+    }
 
     public String getVerificationCodePath() {
         return verificationCodePath;

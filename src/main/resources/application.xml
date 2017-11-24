@@ -21,15 +21,15 @@
 
 
     <!--&lt;!&ndash; spring的属性加载器，加载properties文件中的属性 &ndash;&gt;-->
-    <bean id="propertyPlaceHolderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" >
-        <property name="locations">
-            <array>
-                <value>classpath:crawler.properties</value>
-            </array>
-        </property>
-        <!-- 设置编码格式 -->
-        <property name="fileEncoding" value="UTF-8"></property>
-    </bean>
+    <!--<bean id="propertyPlaceHolderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" >-->
+        <!--<property name="locations">-->
+            <!--<array>-->
+                <!--<value>classpath:crawler.properties</value>-->
+            <!--</array>-->
+        <!--</property>-->
+        <!--&lt;!&ndash; 设置编码格式 &ndash;&gt;-->
+        <!--<property name="fileEncoding" value="UTF-8"></property>-->
+    <!--</bean>-->
 
     <!-- 用于将对象转换为 JSON  -->
     <bean id="stringConverter"
@@ -93,6 +93,10 @@
                   value="org.springframework.web.servlet.view.JstlView" />
         <property name="prefix" value="/WEB-INF/admin/" />
         <property name="suffix" value=".jsp" />
+    </bean>
+    <bean id="configProperties" class="com.hb.crawler.property.ConfigProperties">
+        <property name="verificationCodePath" value="${verificationCode.path}"></property>
+        <property name="localhostUrl" value="${localhost.url}"></property>
     </bean>
 
 </beans>
