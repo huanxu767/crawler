@@ -27,6 +27,13 @@ public class JsBrowserCache {
         jsBrowserInstances.put(jsBrowserInstance.getInstanceId(), jsBrowserInstance);
     }
 
+    public static void put(String instanceId, WebClient webClient) {
+        JsBrowserInstance jsBrowserInstance = new JsBrowserInstance();
+        jsBrowserInstance.setInstanceId(instanceId);
+        jsBrowserInstance.setWebClient(webClient);
+        jsBrowserInstances.put(instanceId, jsBrowserInstance);
+    }
+
     public static JsBrowserInstance get(String instanceId) {
         return jsBrowserInstances.get(instanceId);
     }

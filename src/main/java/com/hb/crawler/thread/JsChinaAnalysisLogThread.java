@@ -32,8 +32,8 @@ public class JsChinaAnalysisLogThread implements Runnable {
 
     private JsChinaCrawlerReportMapper jsChinaCrawlerReportMapper;
 
-
     private JsChinaCrawlerReport jsChinaCrawlerReport = new JsChinaCrawlerReport();
+
     private String instanceId;
 
     public JsChinaAnalysisLogThread(String instanceId, JsChinaCrawlerInstanceMapper jsChinaCrawlerInstanceMapper,
@@ -44,7 +44,6 @@ public class JsChinaAnalysisLogThread implements Runnable {
         this.jsChinaCrawlerCallMapper = jsChinaCrawlerCallMapper;
         this.jsChinaCrawlerSourceLogMapper = jsChinaCrawlerSourceLogMapper;
         this.jsChinaCrawlerReportMapper = jsChinaCrawlerReportMapper;
-
     }
 
     @Override
@@ -142,7 +141,6 @@ public class JsChinaAnalysisLogThread implements Runnable {
         addNet(instanceId, jsCrawlerChinaMobileLog.getNetLogFour());
         addNet(instanceId, jsCrawlerChinaMobileLog.getNetLogFive());
         addNet(instanceId, jsCrawlerChinaMobileLog.getNetLogSix());
-
     }
 
     private void addNet(String instanceId, String netLogJson) {

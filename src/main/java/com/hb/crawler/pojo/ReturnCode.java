@@ -25,7 +25,10 @@ public class ReturnCode {
      * 参数格式不正确
      */
     public static final String PARAMS_FORMAT_ERROR = "10002";
-
+    /**
+     * 保存图片出错
+     */
+    public static final String SAVE_IMG_ERROR = "10003";
 
     /**
      * 用户名密码不能为空
@@ -102,15 +105,14 @@ public class ReturnCode {
      */
     public static final String LOGIN_FAILURE = "30000";
 
-
     static Map<String, String> codeMap = new HashMap();
 
     static Map<String, String> jsChinaLoginErrorMap = new HashMap();
 
-
     static {
         codeMap.put(SUCCESS, "成功");
         codeMap.put(UNKNOWN, "未知错误");
+        codeMap.put(SAVE_IMG_ERROR, "图片保存出错");
         codeMap.put(PARAMS_NOT_ENOUGH, "参数不全");
         codeMap.put(PARAMS_FORMAT_ERROR, "参数格式不正确");
         codeMap.put(USER_PWD_NULL, "用户名密码不能为空");

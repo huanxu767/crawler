@@ -3,6 +3,7 @@ package com.hb.crawler.service.impl;
 import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.HtmlImage;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.google.gson.Gson;
 import com.hb.crawler.dao.JsChinaCrawlerCallMapper;
 import com.hb.crawler.dao.JsChinaCrawlerInstanceMapper;
 import com.hb.crawler.dao.JsChinaCrawlerReportMapper;
@@ -172,7 +173,8 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         resultMap.put("verificationCodeFlag", false);
         resultMap.put("verificationCodeURL", "");
         resultMap.put("operators", "CMCC");
-        resultMap.put("needSendSMS", true);
+        resultMap.put("needSendSMS", false);
+
         resultBean.setResult(resultMap);
         if (loginForm == null) {
             resultBean.failure(ReturnCode.PARAMS_NOT_ENOUGH);
@@ -225,61 +227,49 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
             resultBean.failure(ReturnCode.HAS_LOGIN);
             return resultBean;
         }
-        Map params = new HashMap();
-        params.put("mobile", mobile);
-        params.put("password", DesUtils.encrypt(password));
-        params.put("verificationCode", verificationCode);
-        String url = StringFormat.stringFormat(JsChinaMobileUrl.LOGIN_INTERFACE_URL, params);
-        boolean loginSuccess = false;
-        String resultCode = null;
-        try {
-            WebRequest request = new WebRequest(new URL(url));
-            request.setAdditionalHeader("Referer", "http://service.js.10086.cn/login.html");
-            HtmlPage htmlPage = webClient.getPage(request);
-            String content = htmlPage.asXml();
-            resultCode = content.substring(content.indexOf("resultCode=") + 11, content.indexOf(";") - 1);
-        } catch (FailingHttpStatusCodeException e) {
-            if (e.getStatusCode() == 302) {
-                loginSuccess = true;
-            }
-        } catch (Exception e) {
-            logger.error("登录接口", e);
-        }
-        if (!loginSuccess) {
+        Map hasLoginMap = loginByJsChinaAPI(webClient,mobile,password,verificationCode);
+        if (!(boolean)hasLoginMap.get("loginSuccess")) {
             //登录失败
             webClient.close();
-            resultMap = preLoginProcess(mobile, imei, instanceId);
-            resultBean.failure(ReturnCode.LOGIN_FAILURE, ReturnCode.getLoginErrorDefine(resultCode));
+            Map tempMap = preLoginProcess(mobile, imei, instanceId);
+            resultBean.failure(ReturnCode.LOGIN_FAILURE, ReturnCode.getLoginErrorDefine(hasLoginMap.get("resultCode").toString()));
+            resultMap.putAll(tempMap);
             resultBean.setResult(resultMap);
             return resultBean;
         }
+        //将登录后的cookies序列化
         redisUtils.setSerializable(COOKIES + instanceId, webClient.getCookieManager(), 5 * 60);
         jsSpiderInstance.setStep(2);
         redisUtils.set(INSTANCE_KEY + instanceId, jsSpiderInstance, PRE_EXPIRE_TIME);
-//        TextPage page = null;
-//        try {
-//            page = (TextPage) webClient.getPage("http://service.js.10086.cn/my/actionDispatcher.do?reqUrl=MY_QDCXQueryNew&busiNum=QDCX&queryMonth=201710&queryItem=1&qryPages=1:1002:-1&qryNo=1&operType=3&queryBeginTime=2017-10-01&queryEndTime=2017-10-30");
-//            page.getContent();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        JsBrowserInstance jsBrowserInstance = new JsBrowserInstance();
-        jsBrowserInstance.setInstanceId(instanceId);
-        jsBrowserInstance.setWebClient(webClient);
-        JsBrowserCache.put(jsBrowserInstance);
-        // 异步触发短信
-        JsCrawlerSMSThread jsCrawlerSMSThread = new JsCrawlerSMSThread(instanceId);
-        Thread jsSMSThread = new Thread(jsCrawlerSMSThread);
-        jsSMSThread.start();
 
+        // 是否需要发送短信验证码
+        boolean needSendSMS = isNeedSendSMS(webClient);
+        resultMap.put("needSendSMS", needSendSMS);
+        logger.info("是否短信验证码登录",instanceId,needSendSMS);
+        // 浏览器缓存
+        JsBrowserCache.put(instanceId,webClient);
+        CookieManager hasLoginCookieManager = (CookieManager) redisUtils.getSerializable(COOKIES + instanceId, PRE_EXPIRE_TIME);
+        //插入数据库
+        jsChinaCrawlerSourceLogMapper.insertJsChinaCrawlerSourceLog(instanceId, mobile);
+
+        if(needSendSMS){
+            // 需要短信验证码登录 异步触发短信
+            JsCrawlerSMSThread jsCrawlerSMSThread = new JsCrawlerSMSThread(instanceId);
+            Thread jsSMSThread = new Thread(jsCrawlerSMSThread);
+            jsSMSThread.start();
+        }else{
+            // 不需要短信验证码登录 直接抓详细记录
+            JsCrawlerSMSVerifiedThread jsCrawlerSMSVerifiedThread = new JsCrawlerSMSVerifiedThread(instanceId, hasLoginCookieManager, jsChinaCrawlerSourceLogMapper);
+            Thread jsThread = new Thread(jsCrawlerSMSVerifiedThread);
+            jsThread.start();
+            JsBrowserCache.remove(instanceId);
+        }
         redisUtils.expire(INSTANCE_KEY + instanceId, LOGIN_SUCCESS_TIME);
         redisUtils.set(TIMES + instanceId, 0, LOGIN_SUCCESS_TIME);
         //异步抓取信息
-        //插入数据库
-        jsChinaCrawlerSourceLogMapper.insertJsChinaCrawlerSourceLog(instanceId, mobile);
-        JsCrawlerLoginThread jsCrawlerLoginThread = new JsCrawlerLoginThread(instanceId, webClient.getCookieManager(), jsChinaCrawlerSourceLogMapper);
-        Thread jsThread = new Thread(jsCrawlerLoginThread);
-        jsThread.start();
+        JsCrawlerLoginThread jsCrawlerLoginThread = new JsCrawlerLoginThread(instanceId,hasLoginCookieManager, jsChinaCrawlerSourceLogMapper);
+        Thread jsChinaThread = new Thread(jsCrawlerLoginThread);
+        jsChinaThread.start();
         resultBean.success();
         return resultBean;
     }
@@ -302,29 +292,8 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         Long retryTimes = redisUtils.increment(TIMES + instanceId, LOGIN_SUCCESS_TIME);
         JsBrowserInstance jsBrowserInstance = JsBrowserCache.get(instanceId);
         WebClient webClient = jsBrowserInstance.getWebClient();
-        WebWindow currentWindow = webClient.getCurrentWindow();
-        HtmlPage htmlPage = (HtmlPage) currentWindow.getEnclosedPage();
-        if (retryTimes >= 3) {
-            redisUtils.set(TIMES + instanceId, 0);
-            //验证码重试次数超过3次 重新下发验证码  并初始化次数
-            ScriptResult textResult = htmlPage.executeJavaScript("$('#Dialog_counter').text()");
-            if (!textResult.getJavaScriptResult().toString().endsWith("(0)")) {
-                //30秒内无法多次发送验证码
-                throw new ResultException(ReturnCode.SMS_CODE_RETRY_TIMES_EXCEEDED_PERIOD);
-            } else {
-                ScriptResult afterSendResult = htmlPage.executeJavaScript("$('.send').click();");
-                waitForJsExcuse(afterSendResult, 2000);
-                throw new ResultException(ReturnCode.SMS_CODE_RETRY_TIMES_EXCEEDED);
-            }
-        }
-        String validateSMS = "$('#Dialog_smsNum').val('" + smsCode + "');BmonPage.DialogCallback('yes');";
-        ScriptResult afterScriptResult = htmlPage.executeJavaScript(validateSMS);
-        waitForJsExcuse(afterScriptResult, 2000);
-        String js = "$('#popBox-business').is(':visible');";
-        HtmlPage afterScriptPage = (HtmlPage) afterScriptResult.getNewPage();
-        ScriptResult scriptResult = afterScriptPage.executeJavaScript(js);
-        String flagStr = scriptResult.getJavaScriptResult().toString();
-        boolean flag = Boolean.parseBoolean(flagStr);
+        //验证短信码
+        boolean flag = verifySMSCode(instanceId,webClient,retryTimes,smsCode);
         if (flag) {
             //短信验证码验证失败
             throw new ResultException(ReturnCode.SMS_CODE_WRONG);
@@ -488,6 +457,11 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         redisUtils.delete(TIMES + instanceId);
     }
 
+    /**
+     * 等待JS执行
+     * @param afterScriptResult
+     * @param time
+     */
     void waitForJsExcuse(ScriptResult afterScriptResult, int time) {
         try {
             synchronized (afterScriptResult) {
@@ -498,4 +472,89 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         }
     }
 
+    /**
+     * 登录接口调用
+     * @param webClient
+     * @param mobile
+     * @param password
+     * @param verificationCode
+     * @return
+     */
+    Map loginByJsChinaAPI(WebClient webClient,String mobile,String password,String verificationCode){
+        Map resultMap = new HashMap();
+        Map params = new HashMap();
+        params.put("mobile", mobile);
+        params.put("password", DesUtils.encrypt(password));
+        params.put("verificationCode", verificationCode);
+        boolean loginSuccess = false;
+        String resultCode = "";
+        try {
+            String url = StringFormat.stringFormat(JsChinaMobileUrl.LOGIN_INTERFACE_URL, params);
+            WebRequest request = new WebRequest(new URL(url));
+            request.setAdditionalHeader("Referer", "http://service.js.10086.cn/login.html");
+            HtmlPage htmlPage = webClient.getPage(request);
+            String content = htmlPage.asXml();
+            resultCode = content.substring(content.indexOf("resultCode=") + 11, content.indexOf(";") - 1);
+        } catch (FailingHttpStatusCodeException e) {
+            if (e.getStatusCode() == 302) {
+                loginSuccess = true;
+            }
+        } catch (Exception e) {
+            logger.error("登录接口", e);
+        }
+        resultMap.put("resultCode",resultCode);
+        resultMap.put("loginSuccess",loginSuccess);
+        return resultMap;
+    }
+
+    boolean isNeedSendSMS(WebClient webClient){
+        boolean needSendSMS = true;
+        TextPage page;
+        try {
+            page = webClient.getPage("http://service.js.10086.cn/my/actionDispatcher.do?reqUrl=MY_QDCXQueryNew&busiNum=QDCX");
+            Gson gson = new Gson();
+            Map map = gson.fromJson(page.getContent(),Map.class);
+            if(!"-200008".equals(map.get("systemCode"))){
+                //不需要短信验证码
+                needSendSMS = false;
+            }
+        } catch (Exception e) {
+            logger.error("是否需要短信验证码",e);
+        }
+        return needSendSMS;
+    }
+
+    /**
+     * 验证短信码
+     * @param instanceId
+     * @param webClient
+     * @param retryTimes
+     * @param smsCode
+     * @return
+     */
+    boolean verifySMSCode(String instanceId,WebClient webClient,long retryTimes,String smsCode){
+        WebWindow currentWindow = webClient.getCurrentWindow();
+        HtmlPage htmlPage = (HtmlPage) currentWindow.getEnclosedPage();
+        if (retryTimes >= 3) {
+            redisUtils.set(TIMES + instanceId, 0);
+            //验证码重试次数超过3次 重新下发验证码  并初始化次数
+            ScriptResult textResult = htmlPage.executeJavaScript("$('#Dialog_counter').text()");
+            if (!textResult.getJavaScriptResult().toString().endsWith("(0)")) {
+                //30秒内无法多次发送验证码
+                throw new ResultException(ReturnCode.SMS_CODE_RETRY_TIMES_EXCEEDED_PERIOD);
+            } else {
+                ScriptResult afterSendResult = htmlPage.executeJavaScript("$('.send').click();");
+                waitForJsExcuse(afterSendResult, 2000);
+                throw new ResultException(ReturnCode.SMS_CODE_RETRY_TIMES_EXCEEDED);
+            }
+        }
+        String validateSMS = "$('#Dialog_smsNum').val('" + smsCode + "');BmonPage.DialogCallback('yes');";
+        ScriptResult afterScriptResult = htmlPage.executeJavaScript(validateSMS);
+        waitForJsExcuse(afterScriptResult, 2000);
+        String js = "$('#popBox-business').is(':visible');";
+        HtmlPage afterScriptPage = (HtmlPage) afterScriptResult.getNewPage();
+        ScriptResult scriptResult = afterScriptPage.executeJavaScript(js);
+        String flag = scriptResult.getJavaScriptResult().toString();
+        return Boolean.parseBoolean(flag);
+    }
 }
