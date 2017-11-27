@@ -31,9 +31,9 @@ public class RedisTest {
 
     @Test
     public void xuLieHua(){
-        final WebClient wc = new WebClient(BrowserVersion.CHROME);
+        final WebClient wc = new WebClient(BrowserVersion.CHROME,"61.155.164.109",3128);
         wc.setJavaScriptTimeout(10000);
-        wc.getOptions().setJavaScriptEnabled(true); // 启用JS解释器，默认为true
+        wc.getOptions().setJavaScriptEnabled(false); // 启用JS解释器，默认为true
         wc.getOptions().setCssEnabled(false); // 禁用css支持
         wc.getOptions().setThrowExceptionOnScriptError(false); // js运行错误时，是否抛出异常
         wc.getOptions().setTimeout(10000); // 设置连接超时时间 ，这里是10S。如果为0，则无限期等待
@@ -42,10 +42,7 @@ public class RedisTest {
             HtmlPage loginPage = wc.getPage(JsChinaMobileUrl.LOGIN_URL);
             boolean flag = wc.getJavaScriptEngine().isScriptRunning();
             System.out.println(flag);
-
-            wc.getJavaScriptEngine().holdPosponedActions();
 //            wc.getJavaScriptEngine().shutdown();
-            redisUtils.setSerializable("123",wc,20000);
             System.out.println(loginPage.getTitleText());
         } catch (Exception e) {
             e.printStackTrace();

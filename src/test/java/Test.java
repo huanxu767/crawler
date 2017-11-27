@@ -1,15 +1,12 @@
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.ScriptResult;
-import com.gargoylesoftware.htmlunit.TextPage;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlImage;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.*;
+import com.gargoylesoftware.htmlunit.html.*;
 import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.hb.crawler.pojo.JsChinaMobileUrl;
 import com.hb.crawler.util.FileUtils;
 import com.hb.crawler.util.RandomGenerator;
 import org.apache.commons.lang3.time.DateUtils;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Scanner;
 import java.util.UUID;
@@ -17,70 +14,107 @@ import java.util.UUID;
 public class Test {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 //
-//
-//        WebClient webClient = new WebClient(BrowserVersion.CHROME);
-//        webClient.getOptions().setCssEnabled(true);
-//        webClient.getOptions().setJavaScriptEnabled(true);
-//        webClient.getOptions().setThrowExceptionOnScriptError(false);
-//        webClient.getOptions().setTimeout(10000);
-//
+        String[] ips = {
+                "120.9.79.136:9999",
+                "61.155.164.109:3128",
+                "182.121.202.61:9999",
+                "59.39.128.93:9000",
+                "27.46.42.101:9797",
+                "122.72.18.34:80",
+                "112.117.60.135:9999",
+                "61.155.164.112:3128",
+                "218.20.54.8:9797",
+                "113.110.208.95:9797",
+                "122.72.18.60:80",
+                "112.117.111.254:9999",
+                "122.72.18.35:80",
+                "122.72.18.61:80",
+                "139.224.24.26:8888",
+                "118.178.228.175:3128",
+                "101.37.79.125:3128",
+                "112.74.94.142:3128",
+                "61.160.208.222:8080"};
+
+        for (String ip :ips) {
+            System.out.print(ip + "    ");
+            WebClient webClient = null;
+            try {
+                webClient = new WebClient(BrowserVersion.CHROME,ip.split(":")[0],Integer.parseInt(ip.split(":")[1]));
+                webClient.getOptions().setJavaScriptEnabled(false); // 启用JS解释器，默认为true
+                webClient.getOptions().setCssEnabled(false); // 禁用css支持
+                webClient.getOptions().setThrowExceptionOnScriptError(false); // js运行错误时，是否抛出异常
+                webClient.getOptions().setTimeout(10000); // 设置连接超时时间 ，这里是10S。如果为0，则无限期等待
+                webClient.getPage("http://ww.baidu.com");
+            }catch (Exception e){
+                System.out.print("失败");
+            }finally {
+                System.out.println();
+                if(webClient != null){
+                    webClient.close();
+                }
+            }
+        }
+
+
 //        DefaultCredentialsProvider credentialsProvider = (DefaultCredentialsProvider)webClient.getCredentialsProvider();
 //        credentialsProvider.addCredentials("username", "password");
-//
-//
-//        HtmlPage page = webClient.getPage(url);
-//        HtmlForm loginForm = page.getFormByName("regform");
-//
-//
-//        HtmlInput username = loginForm.getInputByName("txt_userid");
-//        HtmlInput password = loginForm.getInputByName("txt_userpw");
-//
-//        username.setValueAttribute("username");
-//        password.setValueAttribute("password");
-//
-//
-//        HtmlSubmitInput submit = page.getHtmlElementById("login_btn");
-//
-//        webClient.waitForBackgroundJavaScript(30000);
-//        HtmlPage result = submit.click();
-//
-//
-        final WebClient wc = new WebClient(BrowserVersion.EDGE);
-        wc.setJavaScriptTimeout(10000);
-        wc.getOptions().setJavaScriptEnabled(false); // 启用JS解释器，默认为true
-        wc.getOptions().setCssEnabled(true); // 禁用css支持
-        wc.getOptions().setThrowExceptionOnScriptError(false); // js运行错误时，是否抛出异常
-        wc.getOptions().setTimeout(10000); // 设置连接超时时间 ，这里是10S。如果为0，则无限期等待
-        wc.waitForBackgroundJavaScript(20000);
-        try {
-            HtmlPage loginPage = wc.getPage(JsChinaMobileUrl.LOGIN_URL);
-            String js = "$('#userNumber').val('15151861623');" +
-                    "$('#userPassword').val('006235');" +
-                    "$('#popBox-login-button').click();";
 
-//            String js = "document.getElementById('userNumber').value = '13585119230';" +
-//                    "document.getElementById('userPassword').value = '456123';document.getElementById('popBox-login-button').click();" ;
-            ScriptResult scriptResult = loginPage.executeJavaScript(js);
-            try {
-                synchronized (scriptResult) {
-                    scriptResult.wait(2000);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            final HtmlPage homePage = (HtmlPage) scriptResult.getNewPage();
-            if (!homePage.getTitleText().contains("登录")) {
-                System.out.println("成功");
-            } else {
-                System.out.println("失败");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            wc.close();
-        }
+
+
+//        String path = RandomGenerator.timeId() + ".png";
+//            String verificationCodeURL = "D:\\verification-code-img\\"+path;
+//            HtmlImage verificationCodeImg = (HtmlImage) page.getElementById("vcimg");
+//            FileUtils.downLoadImage(verificationCodeImg, verificationCodeURL);
+//
+////
+//            Scanner xx2 = new Scanner( System.in );
+//            String verificationCode = xx2.nextLine();//数据类型为int
+//
+//        HtmlInput verifyCode = (HtmlInput) page.getElementById("verifyCode");
+//        verifyCode.setValueAttribute(verificationCode);
+//
+//        HtmlInput username = (HtmlInput) page.getElementById("userNumber");
+//        HtmlInput password = (HtmlInput) page.getElementById("userPassword");
+//        username.setValueAttribute("15151861623");
+//        password.setValueAttribute("006235");
+//
+//        HtmlAnchor submit = page.getHtmlElementById("popBox-login-button");
+//        HtmlPage homePage = submit.click();
+//        if (!homePage.getTitleText().contains("登录")) {
+//                System.out.println("成功");
+//            } else {
+//                System.out.println("失败");
+//            }
+//
+
+
+//        final WebClient wc = new WebClient(BrowserVersion.CHROME,"183.30.204.77",9000);
+//        wc.setJavaScriptTimeout(10000);
+//        wc.getOptions().setJavaScriptEnabled(true); // 启用JS解释器，默认为true
+//        wc.getOptions().setCssEnabled(true); // 禁用css支持
+//        wc.getOptions().setThrowExceptionOnScriptError(false); // js运行错误时，是否抛出异常
+//        wc.getOptions().setTimeout(10000); // 设置连接超时时间 ，这里是10S。如果为0，则无限期等待
+//        wc.waitForBackgroundJavaScript(10000);
+//        try {
+//            HtmlPage loginPage = wc.getPage(JsChinaMobileUrl.LOGIN_URL);
+//            String js = "$('#userNumber').val('15151861623');" +
+//                    "$('#userPassword').val('006235');" +
+//                    "$('#popBox-login-button').click();";
+//
+//            ScriptResult scriptResult = loginPage.executeJavaScript(js);
+//            final HtmlPage homePage = (HtmlPage) scriptResult.getNewPage();
+//            if (!homePage.getTitleText().contains("登录")) {
+//                System.out.println("成功");
+//            } else {
+//                System.out.println("失败");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        } finally {
+//            wc.close();
+//        }
 
 //
 //        final WebClient wc = new WebClient(BrowserVersion.CHROME);

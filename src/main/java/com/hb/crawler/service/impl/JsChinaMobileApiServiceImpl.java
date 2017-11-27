@@ -491,12 +491,19 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         String resultCode = "";
         try {
             String url = StringFormat.stringFormat(JsChinaMobileUrl.LOGIN_INTERFACE_URL, params);
+            System.out.println("url:"+ url);
+
+            System.out.println("params:"+ params);
+
             WebRequest request = new WebRequest(new URL(url));
             request.setAdditionalHeader("Referer", "http://service.js.10086.cn/login.html");
             HtmlPage htmlPage = webClient.getPage(request);
             String content = htmlPage.asXml();
+            System.out.println("content:"+content);
             resultCode = content.substring(content.indexOf("resultCode=") + 11, content.indexOf(";") - 1);
+            System.out.println("resultCode:"+resultCode);
         } catch (FailingHttpStatusCodeException e) {
+            logger.error("登录接口", e);
             if (e.getStatusCode() == 302) {
                 loginSuccess = true;
             }

@@ -26,7 +26,23 @@ public class JsChinaMobileUrl {
             "&loginType=1" +
             "&smsFlag=1" +
             "&phone-login=on" +
-            "&mobile={mobile}&city=NJDQ&password={password}&verifyCode={verificationCode}";
+            "&mobile={mobile}&password={password}&verifyCode={verificationCode}";
+
+//    public static final String LOGIN_INTERFACE_URL = "http://service.js.10086.cn/my/actionDispatcher.do?" +
+//            "userLoginTransferProtocol=https" +
+//            "&reqUrl=login" +
+//            "&busiNum=LOGIN" +
+//            "&operType=0" +
+//            "&passwordType=1" +
+//            "&isSavePasswordVal=0" +
+//            "&isSavePasswordVal_N=1" +
+//            "&currentD=1" +
+//            "&loginFormTab=http" +
+//            "&loginType=1" +
+//            "&smsFlag=1" +
+//            "&phone-login=on" +
+//            "&mobile={mobile}&password={password}&verifyCode={verificationCode}";
+
 
     /**
      * 通话详情记录
