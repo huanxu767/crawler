@@ -24,4 +24,40 @@
         limit 1
     </select>
 
+    <select id="queryCallTimes" resultType="Map">
+        select  other_party otherParty,count(*) callNum, max(start_time) startTime
+        from crawler_js_china_call  ca,
+             (select instance_id from crawler_js_instance it where it.mobile = #{mobile} and status = 4 order by create_time desc limit 1) ins
+        where ca.instance_id  = ins.instance_id
+            and length(other_party) = 11
+            <if test="otherParty != null  and otherParty != '' ">
+                and other_party = #{otherParty}
+            </if>
+        group by other_party
+        order by callNum desc
+        limit 20
+    </select>
+
+    <select id="queryPositions" resultType="Map">
+        select distinct start_time,visit_arear
+        from
+        (
+        select substr(start_time,1,10) start_time,visit_arear
+        from crawler_js_china_call  ca,
+        ( select instance_id from crawler_js_instance it
+          where it.mobile =  #{mobile} and status = 4
+          order by create_time desc limit 1
+        ) ins
+        where ca.instance_id  = ins.instance_id
+          and length(other_party) = 11
+          <if test="beginTime != null and beginTime != ''">
+            and start_time &gt;= #{beginTime}
+          </if>
+          <if test="endTime != null and endTime != ''">
+            and start_time &lt;= #{endTime}
+          </if>
+        order by start_time desc,visit_arear
+        ) ds
+    </select>
+
 </mapper>

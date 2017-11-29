@@ -111,9 +111,6 @@ public class TestController {
     public String chun() {
         String result = null;
         System.out.println("chrome");
-//        61.155.164.109:3128
-//        182.121.202.61:9999
-//        59.39.128.93:9000
         final WebClient wc = new WebClient(BrowserVersion.CHROME,"61.155.164.109",3128);
         wc.setJavaScriptTimeout(10000);
         wc.getOptions().setJavaScriptEnabled(true); // 启用JS解释器，默认为true
@@ -124,6 +121,7 @@ public class TestController {
 //        wc.setAjaxController(new NicelyResynchronizingAjaxController());
         try {
             HtmlPage loginPage = wc.getPage(JsChinaMobileUrl.LOGIN_URL);
+
 //            new WebConnectionWrapper(wc) {
 //                public WebResponse getResponse(WebRequest request) throws IOException {
 //                    WebResponse response = super.getResponse(request);
@@ -136,38 +134,37 @@ public class TestController {
 //                }
 //            };
 
-//            CookieManager cookieManager = new CookieManager();
-//            for (Cookie cookie:wc.getCookieManager().getCookies()) {
-//                System.out.println(cookie.getName()+"="+cookie.getValue()+";");
-//                if(cookie.getName().contains("browserFinger")){
-//                    Cookie c = new Cookie(cookie.getDomain(),cookie.getName(), UUID.randomUUID().toString());
-//                    cookieManager.addCookie(c);
-//                    continue;
-//                }
-//                cookieManager.addCookie(cookie);
-//            }
+            CookieManager cookieManager = new CookieManager();
+            for (Cookie cookie:wc.getCookieManager().getCookies()) {
+                System.out.println(cookie.getName()+"="+cookie.getValue()+";");
+                if(cookie.getName().contains("browserFinger")){
+                    Cookie c = new Cookie(cookie.getDomain(),cookie.getName(), "cf6a9e62cc9bee5f1d92dd55bebff3a1");
+                    cookieManager.addCookie(c);
+                    continue;
+                }
+                cookieManager.addCookie(cookie);
+            }
 
-//            System.out.println("--2222222------------------------------------------------------------");
-//            wc.setCookieManager(cookieManager);
+            System.out.println("--2222222------------------------------------------------------------");
+            wc.setCookieManager(cookieManager);
 
             for (Cookie cookie:wc.getCookieManager().getCookies()) {
                 System.out.println(cookie.getName()+":"+cookie.getValue()+";");
             }
 
-
-//            System.out.println("----333333333333----------------------------------------------------------");
-//            String js = "$('#userNumber').val('15151861623');" +
-//                    "$('#userPassword').val('006235');" +
-//                    "$('#popBox-login-button').click();";
-//            ScriptResult scriptResult = loginPage.executeJavaScript(js);
-//            final HtmlPage homePage = (HtmlPage) scriptResult.getNewPage();
-//            if (!homePage.getTitleText().contains("登录")) {
-//                System.out.println("成功");
-//                result = "成功";
-//            } else {
-//                System.out.println("失败");
-//                result = "失败";
-//            }
+            System.out.println("----333333333333----------------------------------------------------------");
+            String js = "$('#userNumber').val('15151861623');" +
+                    "$('#userPassword').val('006235');" +
+                    "$('#popBox-login-button').click();";
+            ScriptResult scriptResult = loginPage.executeJavaScript(js);
+            final HtmlPage homePage = (HtmlPage) scriptResult.getNewPage();
+            if (!homePage.getTitleText().contains("登录")) {
+                System.out.println("成功");
+                result = "成功";
+            } else {
+                System.out.println("失败");
+                result = "失败";
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

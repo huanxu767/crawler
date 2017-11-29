@@ -36,8 +36,57 @@ public class AnalysisDataTest {
 //        Map map = jsChinaCrawlerCallMapper.queryLastConnectDay("5ff87bfb231147c5a9916c49728d1f62","11111111111", "11111111111");
 //        System.out.println(map);
 
-        JsChinaCrawlerReport jsChinaCrawlerReport = jsChinaCrawlerReportMapper.queryJsChinaCrawlerReport("5ff87bfb231147c5a9916c49728d1f62");
-        System.out.println(jsChinaCrawlerReport);
+//        List<Map> result = jsChinaCrawlerReportMapper.queryCallTimes    ("18761898238","");
+//        System.out.println(result.size());
+        int days = MDateUtils.betweenDaysNum("20117-11-12","20117-11-13");
+        System.out.println(days);
+    }
+
+    @Test
+    public void queryArea(){
+        List<Map> result = jsChinaCrawlerReportMapper.queryPositions("18761898238","","");
+        List<Map> returnList = new ArrayList<>();
+        if(result == null){
+            return;
+        }
+        if(result.size() == 1){
+            Map resultMap = new HashMap();
+            Map tempMap = result.get(0);
+            resultMap.put("beginTime",tempMap.get("start_time").toString());
+            resultMap.put("endTime",tempMap.get("start_time").toString());
+            resultMap.put("arear",tempMap.get("visit_arear").toString());
+            System.out.println(resultMap);
+            return ;
+        }
+
+        String visitArear = "";
+        String beginTime = "";
+        String endTime = "";
+        for (int i = 0; i < result.size(); i++) {
+            Map tempMap = result.get(i);
+            String tempArear = tempMap.get("visit_arear").toString();
+            String tempTime = tempMap.get("start_time").toString();
+            if(i == 0){
+                //第一次循环的时候
+                visitArear = tempMap.get("visit_arear").toString();
+                beginTime = tempMap.get("start_time").toString();
+                endTime  = tempMap.get("start_time").toString();
+            }
+            if(MDateUtils.betweenDaysNum(tempTime,endTime) <= 1 && tempArear.equals(visitArear) ){
+                //同一城市
+                endTime = tempMap.get("start_time").toString();
+            }else{
+                Map cityMap = new HashMap();
+                cityMap.put("beginTime",beginTime);
+                cityMap.put("endTime",endTime);
+                cityMap.put("arear",visitArear);
+                returnList.add(cityMap);
+                visitArear = tempMap.get("visit_arear").toString();
+                beginTime = tempMap.get("start_time").toString();
+                endTime  = tempMap.get("start_time").toString();
+            }
+        }
+
     }
     @Test
     public void analysisDataTest() {

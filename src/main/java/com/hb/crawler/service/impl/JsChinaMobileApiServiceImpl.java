@@ -25,9 +25,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 江苏移动爬虫接口实现
@@ -444,6 +442,66 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
             throw new ResultException(ReturnCode.REPORT_NOT_END);
         }
         return jsChinaCrawlerReport;
+    }
+
+    @Override
+    public List queryCallTimes(String mobile, String otherParty) {
+        return jsChinaCrawlerReportMapper.queryCallTimes(mobile,otherParty);
+    }
+
+    @Override
+    public List getPositions(String mobile, String pBeginTime, String pEndTime) {
+        List<Map> result = jsChinaCrawlerReportMapper.queryPositions(mobile,pBeginTime,pEndTime);
+        List<Map> returnList = new ArrayList<>();
+        if(result == null){
+            return returnList;
+        }
+        if(result.size() == 1){
+            Map resultMap = new HashMap();
+            Map tempMap = result.get(0);
+            resultMap.put("beginTime",tempMap.get("start_time").toString());
+            resultMap.put("endTime",tempMap.get("start_time").toString());
+            resultMap.put("arear",tempMap.get("visit_arear").toString());
+            returnList.add(resultMap);
+            return returnList;
+        }
+
+        String visitArear = "";
+        String beginTime = "";
+        String endTime = "";
+        for (int i = 0; i < result.size(); i++) {
+            Map tempMap = result.get(i);
+            String tempArear = tempMap.get("visit_arear").toString();
+            String tempTime = tempMap.get("start_time").toString();
+            if(i == 0){
+                //第一次循环的时候
+                visitArear = tempMap.get("visit_arear").toString();
+                beginTime = tempMap.get("start_time").toString();
+                endTime  = tempMap.get("start_time").toString();
+            }
+            if(MDateUtils.betweenDaysNum(tempTime,endTime) <= 1 && tempArear.equals(visitArear) && i != result.size() - 1){
+                //同一城市 相差天数<=1天 并且不是最后1条记录
+                endTime = tempMap.get("start_time").toString();
+            }else if(i == result.size() - 1){
+                //如果最后1次
+                Map cityMap = new HashMap();
+                cityMap.put("beginTime",beginTime);
+                cityMap.put("endTime",tempMap.get("start_time").toString());
+                cityMap.put("arear",visitArear);
+                returnList.add(cityMap);
+            }else{
+                Map cityMap = new HashMap();
+                cityMap.put("beginTime",beginTime);
+                cityMap.put("endTime",endTime);
+                cityMap.put("arear",visitArear);
+                returnList.add(cityMap);
+                visitArear = tempMap.get("visit_arear").toString();
+                beginTime = tempMap.get("start_time").toString();
+                endTime  = tempMap.get("start_time").toString();
+            }
+
+        }
+        return returnList;
     }
 
     /**

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -206,5 +207,50 @@ public class JsChinaMobileApiController {
         return new ResponseEntity(FileUtils.readFileToByteArray(file), headers, HttpStatus.OK);
     }
 
+
+    /**
+     * 查询联系人次数
+     *
+     * @return
+     */
+    @RequestMapping(value = "/queryCallTimes")
+    public BaseResultBean queryCallTimes(String mobile,String otherParty) {
+        logger.info("查询联系人次数,mobile[{}]otherParty[{}]", mobile);
+        BaseResultBean bean = new BaseResultBean();
+        try {
+            List list = jsChinaMobileApiService.queryCallTimes(mobile,otherParty);
+            bean.setResult(list);
+            bean.success();
+        } catch (ResultException e) {
+            bean.failure(e);
+        } catch (Exception e) {
+            bean.failure();
+            logger.error("查询联系人次数", e);
+        }
+        return bean;
+    }
+
+    /**
+     * 查询联系人地址
+     *
+     * @param mobile
+     * @return
+     */
+    @RequestMapping(value = "/getPositions")
+    public BaseResultBean getPositions(String mobile,String beginTime,String endTime) {
+        logger.info("查询报告,mobile[{}]beginTime[{}]endTime[{}]", mobile,beginTime,endTime);
+        BaseResultBean bean = new BaseResultBean();
+        try {
+            List list = jsChinaMobileApiService.getPositions(mobile,beginTime,endTime);
+            bean.setResult(list);
+            bean.success();
+        } catch (ResultException e) {
+            bean.failure(e);
+        } catch (Exception e) {
+            bean.failure();
+            logger.error("查询联系人地址", e);
+        }
+        return bean;
+    }
 
 }

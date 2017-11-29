@@ -5,6 +5,7 @@ import com.hb.crawler.pojo.JsChinaCrawlerInstance;
 import com.hb.crawler.pojo.JsChinaCrawlerReport;
 import com.hb.crawler.pojo.LoginForm;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -74,4 +75,21 @@ public interface JsChinaMobileApiService {
      * @return
      */
     JsChinaCrawlerReport getReport(String instanceId);
+
+    /**
+     * 查询联系人次数
+     * @param mobile
+     * @param otherParty
+     * @return
+     */
+    List queryCallTimes(String mobile,String otherParty);
+
+    /**
+     * 查询联系人位置
+     * @param mobile
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    List getPositions(String mobile,String beginTime,String endTime);
 }

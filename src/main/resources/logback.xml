@@ -2,7 +2,7 @@
 <configuration>
     <!-- 尽量别用绝对路径，如果带参数不同容器路径解释可能不同-->
     <!--<property resource = "crawler.properties"/>-->
-    <logger name="com.gargoylesoftware" level="ERROR"/>
+    <!--<logger name="com.gargoylesoftware" level="info"/>-->
 
     <!--控制台输出 -->
     <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
