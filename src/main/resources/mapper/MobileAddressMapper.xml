@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hb.crawler.dao.MobileAddressMapper">
+
+    <resultMap id="mobileAddress" type="com.hb.crawler.pojo.MobileAddress"/>
+
+    <insert id="addMobileAddress">
+      insert into common_mobile_address (mobile_prefix,province,city,operator,status_type)
+      values(#{mobilePrefix},#{province},#{city},#{operator},#{statusType}  )
+    </insert>
+
+    <select id="getMobileAddress" resultMap="mobileAddress">
+        select * from common_mobile_address
+        where status_type = '1'
+        and mobile_prefix = #{mobilePrefix}
+    </select>
+
+</mapper>
