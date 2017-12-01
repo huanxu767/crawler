@@ -561,8 +561,8 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
             resultCode = content.substring(content.indexOf("resultCode=") + 11, content.indexOf(";") - 1);
             System.out.println("resultCode:"+resultCode);
         } catch (FailingHttpStatusCodeException e) {
-            logger.error("登录接口", e);
             if (e.getStatusCode() == 302) {
+                logger.info("登录成功");
                 loginSuccess = true;
             }
         } catch (Exception e) {

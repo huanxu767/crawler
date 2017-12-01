@@ -213,8 +213,8 @@ public class JsChinaMobileApiController {
      *
      * @return
      */
-    @RequestMapping(value = "/queryCallTimes")
-    public BaseResultBean queryCallTimes(String mobile,String otherParty) {
+    @RequestMapping(value = "/callTimes")
+    public BaseResultBean callTimes(String mobile,String otherParty) {
         logger.info("查询联系人次数,mobile[{}]otherParty[{}]", mobile);
         BaseResultBean bean = new BaseResultBean();
         try {
@@ -236,9 +236,9 @@ public class JsChinaMobileApiController {
      * @param mobile
      * @return
      */
-    @RequestMapping(value = "/getPositions")
-    public BaseResultBean getPositions(String mobile,String beginTime,String endTime) {
-        logger.info("查询报告,mobile[{}]beginTime[{}]endTime[{}]", mobile,beginTime,endTime);
+    @RequestMapping(value = "/contactLocation")
+    public BaseResultBean contactLocation(String mobile,String beginTime,String endTime) {
+        logger.info("查询联系人地址,mobile[{}]beginTime[{}]endTime[{}]", mobile,beginTime,endTime);
         BaseResultBean bean = new BaseResultBean();
         try {
             List list = jsChinaMobileApiService.getPositions(mobile,beginTime,endTime);

@@ -105,6 +105,11 @@ public class ReturnCode {
      */
     public static final String LOGIN_FAILURE = "30000";
 
+    /**
+     * 数据库无此记录
+     */
+    public static final String NO_RECORD_HIT = "40000";
+
     static Map<String, String> codeMap = new HashMap();
 
     static Map<String, String> jsChinaLoginErrorMap = new HashMap();
@@ -128,6 +133,8 @@ public class ReturnCode {
         codeMap.put(INSTANCE_ID_NOT_EXSIT, "实例不存在");
         codeMap.put(INSTANCE_NOT_END, "流程未走完");
         codeMap.put(REPORT_NOT_END, "数据尚未解析完");
+        codeMap.put(NO_RECORD_HIT, "数据库无此记录");
+
 
 
         jsChinaLoginErrorMap.put("3002","对不起，服务密码输入错误！每个号码当天累计3次输入错误密码，服务密码将会被锁！");
@@ -162,7 +169,6 @@ public class ReturnCode {
     public static String getDefine(String code) {
         return codeMap.get(code);
     }
-
 
 
 }

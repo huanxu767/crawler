@@ -49,16 +49,16 @@ public class TestController {
             try {
                 HtmlPage loginPage = wc.getPage(JsChinaMobileUrl.LOGIN_URL);
                 System.out.println(loginPage.getTitleText());
-//                String js = "$('#userNumber').val('13585119230');" +
-//                        "$('#userPassword').val('456123');" +
-//                        "$('#popBox-login-button').click();";
-//                ScriptResult scriptResult = loginPage.executeJavaScript(js);
-//                final HtmlPage homePage = (HtmlPage) scriptResult.getNewPage();
-//                if(!homePage.getTitleText().contains("登录")){
-//                    System.out.println("成功");
-//                }else{
-//                    System.out.println("失败");
-//                }
+                String js = "$('#userNumber').val('13585119230');" +
+                        "$('#userPassword').val('456123');" +
+                        "$('#popBox-login-button').click();";
+                ScriptResult scriptResult = loginPage.executeJavaScript(js);
+                final HtmlPage homePage = (HtmlPage) scriptResult.getNewPage();
+                if(!homePage.getTitleText().contains("登录")){
+                    System.out.println("成功");
+                }else{
+                    System.out.println("失败");
+                }
                 list.add(wc);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -72,12 +72,11 @@ public class TestController {
 
     @RequestMapping(value = "/getImg")
     public String test2() {
-        Map map = new HashMap<>();
         int i = 0;
         while (i < 100) {
             i++;
             System.out.println(i);
-            final WebClient wc = new WebClient(BrowserVersion.FIREFOX_45);
+            final WebClient wc = new WebClient(BrowserVersion.CHROME);
             wc.setJavaScriptTimeout(10000);
             wc.getOptions().setJavaScriptEnabled(true); // 启用JS解释器，默认为true
             wc.getOptions().setCssEnabled(false); // 禁用css支持
@@ -101,9 +100,7 @@ public class TestController {
             } finally {
                 wc.close();
             }
-            map.put(i, wc);
         }
-
         return "OK";
     }
 
@@ -111,7 +108,7 @@ public class TestController {
     public String chun() {
         String result = null;
         System.out.println("chrome");
-        final WebClient wc = new WebClient(BrowserVersion.CHROME,"61.155.164.109",3128);
+        final WebClient wc = new WebClient(BrowserVersion.CHROME);
         wc.setJavaScriptTimeout(10000);
         wc.getOptions().setJavaScriptEnabled(true); // 启用JS解释器，默认为true
         wc.getOptions().setCssEnabled(false); // 禁用css支持
