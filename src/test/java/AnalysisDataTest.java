@@ -33,13 +33,13 @@ public class AnalysisDataTest {
     private JsChinaCrawlerReportMapper jsChinaCrawlerReportMapper;
     @Test
     public void getIm(){
-//        Map map = jsChinaCrawlerCallMapper.queryLastConnectDay("5ff87bfb231147c5a9916c49728d1f62","11111111111", "11111111111");
-//        System.out.println(map);
+        List map = jsChinaCrawlerReportMapper.queryCallTimes("15151861623",null);
+        System.out.println(map);
 
 //        List<Map> result = jsChinaCrawlerReportMapper.queryCallTimes    ("18761898238","");
 //        System.out.println(result.size());
-        int days = MDateUtils.betweenDaysNum("20117-11-12","20117-11-13");
-        System.out.println(days);
+//        int days = MDateUtils.betweenDaysNum("20117-11-12","20117-11-13");
+//        System.out.println(days);
     }
 
     @Test

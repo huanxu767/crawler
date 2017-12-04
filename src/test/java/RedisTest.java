@@ -31,21 +31,33 @@ public class RedisTest {
 
     @Test
     public void xuLieHua(){
-        final WebClient wc = new WebClient(BrowserVersion.CHROME,"61.155.164.109",3128);
+//        221.217.48.39:9000
+//        124.64.25.110:53281
+//        183.184.112.78:9797
+
+        final WebClient wc = new WebClient(BrowserVersion.CHROME,"182.121.205.48",9999);
         wc.setJavaScriptTimeout(10000);
-        wc.getOptions().setJavaScriptEnabled(false); // 启用JS解释器，默认为true
+        wc.getOptions().setJavaScriptEnabled(true); // 启用JS解释器，默认为true
         wc.getOptions().setCssEnabled(false); // 禁用css支持
         wc.getOptions().setThrowExceptionOnScriptError(false); // js运行错误时，是否抛出异常
         wc.getOptions().setTimeout(10000); // 设置连接超时时间 ，这里是10S。如果为0，则无限期等待
         wc.waitForBackgroundJavaScript(10000);
         try {
             HtmlPage loginPage = wc.getPage(JsChinaMobileUrl.LOGIN_URL);
-            boolean flag = wc.getJavaScriptEngine().isScriptRunning();
-            System.out.println(flag);
-//            wc.getJavaScriptEngine().shutdown();
-            System.out.println(loginPage.getTitleText());
+            String js = "$('#userNumber').val('15151861623');" +
+                    "$('#userPassword').val('006235');" +
+                    "$('#popBox-login-button').click();";
+            ScriptResult scriptResult = loginPage.executeJavaScript(js);
+            final HtmlPage homePage = (HtmlPage) scriptResult.getNewPage();
+            if(!homePage.getTitleText().contains("登录")){
+                System.out.println("成功");
+            }else{
+                System.out.println("失败");
+            }
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            wc.close();
         }
     }
 

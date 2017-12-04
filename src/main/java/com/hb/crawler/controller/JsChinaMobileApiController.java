@@ -213,8 +213,8 @@ public class JsChinaMobileApiController {
      *
      * @return
      */
-    @RequestMapping(value = "/callTimes")
-    public BaseResultBean callTimes(String mobile,String otherParty) {
+    @RequestMapping(value = "/topContacts")
+    public BaseResultBean topContacts(String mobile,String otherParty) {
         logger.info("查询联系人次数,mobile[{}]otherParty[{}]", mobile);
         BaseResultBean bean = new BaseResultBean();
         try {

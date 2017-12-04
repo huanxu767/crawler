@@ -25,7 +25,7 @@
     </select>
 
     <select id="queryCallTimes" resultType="Map">
-        select  other_party otherParty,count(*) callNum, max(start_time) startTime
+        select  other_party otherParty,count(*) callNum, max(start_time) startTime,(select concat(province,city)  from common_mobile_address ad where ad.mobile_prefix = substr(other_party,1,7)) location
         from crawler_js_china_call  ca,
              (select instance_id from crawler_js_instance it where it.mobile = #{mobile} and status = 4 order by create_time desc limit 1) ins
         where ca.instance_id  = ins.instance_id
