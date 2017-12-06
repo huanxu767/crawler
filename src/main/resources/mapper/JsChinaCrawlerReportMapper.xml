@@ -7,12 +7,12 @@
     <insert id="addJsChinaCrawlerReport">
     insert into crawler_js_china_report (
       id, instance_id,mobile,real_name,is_real_name,
-      month_average_payment,max_payment, standard_deviation,emergency_contact_days,total_contact,
+      month_average_payment,max_payment, standard_deviation,emergency_contact_days,contact_instability,total_contact,
       is_group,join_group_days,online_days,credit_level,account_balance,
       continuous_offline_days,offline_days_times)
     values(
         #{id},#{instanceId},#{mobile},#{realName},#{isRealName},
-        #{monthAveragePayment},#{maxPayment},#{standardDeviation},#{emergencyContactDays},#{totalContact},
+        #{monthAveragePayment},#{maxPayment},#{standardDeviation},#{emergencyContactDays},#{contactInstability},#{totalContact},
         #{isGroup},#{joinGroupDays},#{onlineDays},#{creditLevel},#{accountBalance},
         #{continuousOfflineDays},#{offlineDaysTimes})
     </insert>

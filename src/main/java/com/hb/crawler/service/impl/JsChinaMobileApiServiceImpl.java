@@ -99,8 +99,8 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         jsChinaCrawlerInstanceMapper.addJsChinaCrawlerInstance(jsChinaCrawlerInstance);
         resultMap = preLoginProcess(mobile, imei, instanceId);
         resultMap.put("instanceId", instanceId);
-        resultMap.put("needPassword",true);
-        resultMap.put("needSMSCode",false);
+        resultMap.put("needPassword", true);
+        resultMap.put("needSMSCode", false);
         return resultMap;
     }
 
@@ -136,7 +136,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
                 logger.debug(jsBrowserInstance.getInstanceId() + ":不需要需要验证码");
             }
             jsChinaCrawlerInstanceMapper.updateJsChinaCrawlerInstance(jsChinaCrawlerInstance);
-            resultMap.put("verificationCodeURL",configProperties.getLocalhostUrl(path));
+            resultMap.put("verificationCodeURL", configProperties.getLocalhostUrl(path));
             JsSpiderInstance jsSpiderInstance = new JsSpiderInstance(instanceId, verificationCodeFlag, imei, mobile, 1);
             redisUtils.set(MOBILE_KEY + mobile + imei, instanceId, PRE_EXPIRE_TIME);
             redisUtils.set(INSTANCE_KEY + instanceId, jsSpiderInstance, PRE_EXPIRE_TIME);
@@ -225,8 +225,8 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
             resultBean.failure(ReturnCode.HAS_LOGIN);
             return resultBean;
         }
-        Map hasLoginMap = loginByJsChinaAPI(webClient,mobile,password,verificationCode);
-        if (!(boolean)hasLoginMap.get("loginSuccess")) {
+        Map hasLoginMap = loginByJsChinaAPI(webClient, mobile, password, verificationCode);
+        if (!(boolean) hasLoginMap.get("loginSuccess")) {
             //登录失败
             webClient.close();
             Map tempMap = preLoginProcess(mobile, imei, instanceId);
@@ -244,19 +244,19 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         boolean needSendSMS = isNeedSendSMS(webClient);
         resultMap.put("needSendSMS", needSendSMS);
         resultBean.setResult(resultMap);
-        logger.info("是否短信验证码登录"+instanceId + needSendSMS);
+        logger.info("是否短信验证码登录" + instanceId + needSendSMS);
         // 浏览器缓存
-        JsBrowserCache.put(instanceId,webClient);
+        JsBrowserCache.put(instanceId, webClient);
         CookieManager hasLoginCookieManager = (CookieManager) redisUtils.getSerializable(COOKIES + instanceId, PRE_EXPIRE_TIME);
         //插入数据库
         jsChinaCrawlerSourceLogMapper.insertJsChinaCrawlerSourceLog(instanceId, mobile);
 
-        if(needSendSMS){
+        if (needSendSMS) {
             // 需要短信验证码登录 异步触发短信
             JsCrawlerSMSThread jsCrawlerSMSThread = new JsCrawlerSMSThread(instanceId);
             Thread jsSMSThread = new Thread(jsCrawlerSMSThread);
             jsSMSThread.start();
-        }else{
+        } else {
             // 不需要短信验证码登录 直接抓详细记录
             JsCrawlerSMSVerifiedThread jsCrawlerSMSVerifiedThread = new JsCrawlerSMSVerifiedThread(instanceId, hasLoginCookieManager, jsChinaCrawlerSourceLogMapper);
             Thread jsThread = new Thread(jsCrawlerSMSVerifiedThread);
@@ -266,7 +266,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         redisUtils.expire(INSTANCE_KEY + instanceId, LOGIN_SUCCESS_TIME);
         redisUtils.set(TIMES + instanceId, 0, LOGIN_SUCCESS_TIME);
         //异步抓取信息
-        JsCrawlerLoginThread jsCrawlerLoginThread = new JsCrawlerLoginThread(instanceId,hasLoginCookieManager, jsChinaCrawlerSourceLogMapper);
+        JsCrawlerLoginThread jsCrawlerLoginThread = new JsCrawlerLoginThread(instanceId, hasLoginCookieManager, jsChinaCrawlerSourceLogMapper);
         Thread jsChinaThread = new Thread(jsCrawlerLoginThread);
         jsChinaThread.start();
         resultBean.success();
@@ -292,7 +292,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         JsBrowserInstance jsBrowserInstance = JsBrowserCache.get(instanceId);
         WebClient webClient = jsBrowserInstance.getWebClient();
         //验证短信码
-        boolean flag = verifySMSCode(instanceId,webClient,retryTimes,smsCode);
+        boolean flag = verifySMSCode(instanceId, webClient, retryTimes, smsCode);
         if (flag) {
             //短信验证码验证失败
             throw new ResultException(ReturnCode.SMS_CODE_WRONG);
@@ -415,7 +415,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         jsChinaCrawlerInstanceNew.setStatus("4");
         jsChinaCrawlerInstanceMapper.updateJsChinaCrawlerInstance(jsChinaCrawlerInstanceNew);
         // 异步生成报告
-        JsChinaAnalysisLogThread jsChinaAnalysisLogThread = new JsChinaAnalysisLogThread(instanceId, jsChinaCrawlerInstanceMapper, jsChinaCrawlerCallMapper, jsChinaCrawlerSourceLogMapper, jsChinaCrawlerReportMapper);
+        JsChinaAnalysisLogThread jsChinaAnalysisLogThread = new JsChinaAnalysisLogThread(instanceId, configProperties.getPythonWebUrl(), jsChinaCrawlerInstanceMapper, jsChinaCrawlerCallMapper, jsChinaCrawlerSourceLogMapper, jsChinaCrawlerReportMapper);
         Thread jsAnalysisLogThread = new Thread(jsChinaAnalysisLogThread);
         jsAnalysisLogThread.start();
     }
@@ -446,22 +446,22 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
 
     @Override
     public List queryCallTimes(String mobile, String otherParty) {
-        return jsChinaCrawlerReportMapper.queryCallTimes(mobile,otherParty);
+        return jsChinaCrawlerReportMapper.queryCallTimes(mobile, otherParty);
     }
 
     @Override
     public List getPositions(String mobile, String pBeginTime, String pEndTime) {
-        List<Map> result = jsChinaCrawlerReportMapper.queryPositions(mobile,pBeginTime,pEndTime);
+        List<Map> result = jsChinaCrawlerReportMapper.queryPositions(mobile, pBeginTime, pEndTime);
         List<Map> returnList = new ArrayList<>();
-        if(result == null){
+        if (result == null) {
             return returnList;
         }
-        if(result.size() == 1){
+        if (result.size() == 1) {
             Map resultMap = new HashMap();
             Map tempMap = result.get(0);
-            resultMap.put("beginTime",tempMap.get("start_time").toString());
-            resultMap.put("endTime",tempMap.get("start_time").toString());
-            resultMap.put("arear",tempMap.get("visit_arear").toString());
+            resultMap.put("beginTime", tempMap.get("start_time").toString());
+            resultMap.put("endTime", tempMap.get("start_time").toString());
+            resultMap.put("arear", tempMap.get("visit_arear").toString());
             returnList.add(resultMap);
             return returnList;
         }
@@ -473,31 +473,31 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
             Map tempMap = result.get(i);
             String tempArear = tempMap.get("visit_arear").toString();
             String tempTime = tempMap.get("start_time").toString();
-            if(i == 0){
+            if (i == 0) {
                 //第一次循环的时候
                 visitArear = tempMap.get("visit_arear").toString();
                 beginTime = tempMap.get("start_time").toString();
-                endTime  = tempMap.get("start_time").toString();
+                endTime = tempMap.get("start_time").toString();
             }
-            if(MDateUtils.betweenDaysNum(tempTime,endTime) <= 1 && tempArear.equals(visitArear) && i != result.size() - 1){
+            if (MDateUtils.betweenDaysNum(tempTime, endTime) <= 1 && tempArear.equals(visitArear) && i != result.size() - 1) {
                 //同一城市 相差天数<=1天 并且不是最后1条记录
                 endTime = tempMap.get("start_time").toString();
-            }else if(i == result.size() - 1){
+            } else if (i == result.size() - 1) {
                 //如果最后1次
                 Map cityMap = new HashMap();
-                cityMap.put("beginTime",beginTime);
-                cityMap.put("endTime",tempMap.get("start_time").toString());
-                cityMap.put("arear",visitArear);
+                cityMap.put("beginTime", beginTime);
+                cityMap.put("endTime", tempMap.get("start_time").toString());
+                cityMap.put("arear", visitArear);
                 returnList.add(cityMap);
-            }else{
+            } else {
                 Map cityMap = new HashMap();
-                cityMap.put("beginTime",beginTime);
-                cityMap.put("endTime",endTime);
-                cityMap.put("arear",visitArear);
+                cityMap.put("beginTime", beginTime);
+                cityMap.put("endTime", endTime);
+                cityMap.put("arear", visitArear);
                 returnList.add(cityMap);
                 visitArear = tempMap.get("visit_arear").toString();
                 beginTime = tempMap.get("start_time").toString();
-                endTime  = tempMap.get("start_time").toString();
+                endTime = tempMap.get("start_time").toString();
             }
 
         }
@@ -518,6 +518,7 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
 
     /**
      * 等待JS执行
+     *
      * @param afterScriptResult
      * @param time
      */
@@ -533,13 +534,14 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
 
     /**
      * 登录接口调用
+     *
      * @param webClient
      * @param mobile
      * @param password
      * @param verificationCode
      * @return
      */
-    Map loginByJsChinaAPI(WebClient webClient,String mobile,String password,String verificationCode){
+    Map loginByJsChinaAPI(WebClient webClient, String mobile, String password, String verificationCode) {
         Map resultMap = new HashMap();
         Map params = new HashMap();
         params.put("mobile", mobile);
@@ -549,17 +551,17 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         String resultCode = "";
         try {
             String url = StringFormat.stringFormat(JsChinaMobileUrl.LOGIN_INTERFACE_URL, params);
-            System.out.println("url:"+ url);
+            System.out.println("url:" + url);
 
-            System.out.println("params:"+ params);
+            System.out.println("params:" + params);
 
             WebRequest request = new WebRequest(new URL(url));
             request.setAdditionalHeader("Referer", "http://service.js.10086.cn/login.html");
             HtmlPage htmlPage = webClient.getPage(request);
             String content = htmlPage.asXml();
-            System.out.println("content:"+content);
+            System.out.println("content:" + content);
             resultCode = content.substring(content.indexOf("resultCode=") + 11, content.indexOf(";") - 1);
-            System.out.println("resultCode:"+resultCode);
+            System.out.println("resultCode:" + resultCode);
         } catch (FailingHttpStatusCodeException e) {
             if (e.getStatusCode() == 302) {
                 logger.info("登录成功");
@@ -568,37 +570,38 @@ public class JsChinaMobileApiServiceImpl implements JsChinaMobileApiService {
         } catch (Exception e) {
             logger.error("登录接口", e);
         }
-        resultMap.put("resultCode",resultCode);
-        resultMap.put("loginSuccess",loginSuccess);
+        resultMap.put("resultCode", resultCode);
+        resultMap.put("loginSuccess", loginSuccess);
         return resultMap;
     }
 
-    boolean isNeedSendSMS(WebClient webClient){
+    boolean isNeedSendSMS(WebClient webClient) {
         boolean needSendSMS = true;
         TextPage page;
         try {
             page = webClient.getPage("http://service.js.10086.cn/my/actionDispatcher.do?reqUrl=MY_QDCXQueryNew&busiNum=QDCX");
             Gson gson = new Gson();
-            Map map = gson.fromJson(page.getContent(),Map.class);
-            if(!"-200008".equals(map.get("systemCode"))){
+            Map map = gson.fromJson(page.getContent(), Map.class);
+            if (!"-200008".equals(map.get("systemCode"))) {
                 //不需要短信验证码
                 needSendSMS = false;
             }
         } catch (Exception e) {
-            logger.error("是否需要短信验证码",e);
+            logger.error("是否需要短信验证码", e);
         }
         return needSendSMS;
     }
 
     /**
      * 验证短信码
+     *
      * @param instanceId
      * @param webClient
      * @param retryTimes
      * @param smsCode
      * @return
      */
-    boolean verifySMSCode(String instanceId,WebClient webClient,long retryTimes,String smsCode){
+    boolean verifySMSCode(String instanceId, WebClient webClient, long retryTimes, String smsCode) {
         WebWindow currentWindow = webClient.getCurrentWindow();
         HtmlPage htmlPage = (HtmlPage) currentWindow.getEnclosedPage();
         if (retryTimes >= 3) {

@@ -26,6 +26,7 @@ public class JsChinaCrawlerReport {
     private int accountBalance;
     private int continuousOfflineDays;
     private int offlineDaysTimes;
+    private String contactInstability;
 
     private Date createTime;
 
@@ -173,6 +174,14 @@ public class JsChinaCrawlerReport {
         this.createTime = createTime;
     }
 
+    public String getContactInstability() {
+        return contactInstability;
+    }
+
+    public void setContactInstability(String contactInstability) {
+        this.contactInstability = contactInstability;
+    }
+
     public Map getMap() {
         Map map = new HashMap();
         map.put("R000", true);
@@ -184,6 +193,7 @@ public class JsChinaCrawlerReport {
         map.put("F001", emergencyContactDays);
         map.put("F002", totalContact);
         map.put("F003", "0".equals(isGroup) ? false : true);
+        map.put("F004", contactInstability);
         map.put("F005", joinGroupDays);
         map.put("F006", creditLevel);
         map.put("F007", accountBalance);

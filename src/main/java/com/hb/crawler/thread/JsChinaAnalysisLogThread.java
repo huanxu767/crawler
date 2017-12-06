@@ -7,10 +7,12 @@ import com.hb.crawler.dao.JsChinaCrawlerReportMapper;
 import com.hb.crawler.dao.JsChinaCrawlerSourceLogMapper;
 import com.hb.crawler.pojo.*;
 import com.hb.crawler.util.MDateUtils;
+import com.hb.crawler.util.MHttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,10 +38,13 @@ public class JsChinaAnalysisLogThread implements Runnable {
 
     private String instanceId;
 
-    public JsChinaAnalysisLogThread(String instanceId, JsChinaCrawlerInstanceMapper jsChinaCrawlerInstanceMapper,
+    private String url;
+
+    public JsChinaAnalysisLogThread(String instanceId, String url, JsChinaCrawlerInstanceMapper jsChinaCrawlerInstanceMapper,
                                     JsChinaCrawlerCallMapper jsChinaCrawlerCallMapper, JsChinaCrawlerSourceLogMapper jsChinaCrawlerSourceLogMapper,
                                     JsChinaCrawlerReportMapper jsChinaCrawlerReportMapper) {
         this.instanceId = instanceId;
+        this.url = url;
         this.jsChinaCrawlerInstanceMapper = jsChinaCrawlerInstanceMapper;
         this.jsChinaCrawlerCallMapper = jsChinaCrawlerCallMapper;
         this.jsChinaCrawlerSourceLogMapper = jsChinaCrawlerSourceLogMapper;
@@ -48,7 +53,7 @@ public class JsChinaAnalysisLogThread implements Runnable {
 
     @Override
     public void run() {
-        logger.info("生成报告,instance[{}]",instanceId);
+        logger.info("生成报告,instance[{}]", instanceId);
         JsChinaCrawlerInstance jsChinaCrawlerInstance = jsChinaCrawlerInstanceMapper.queryJsChinaCrawlerInstance(instanceId);
         if (jsChinaCrawlerInstance == null) {
             return;
@@ -93,6 +98,7 @@ public class JsChinaAnalysisLogThread implements Runnable {
         Long otherParties = jsChinaCrawlerCallMapper.countCallOtherParties(instanceId);
         jsChinaCrawlerReport.setTotalContact(objectToInt(otherParties));
         offLineDays();
+        jsChinaCrawlerReport.setContactInstability(contactInstability(url, instanceId));
         jsChinaCrawlerReportMapper.addJsChinaCrawlerReport(jsChinaCrawlerReport);
     }
 
@@ -357,6 +363,22 @@ public class JsChinaAnalysisLogThread implements Runnable {
         } catch (Exception e) {
             return 0;
         }
+    }
+
+    private String contactInstability(String url, String instanceId) {
+        String result = "1";
+        for (int i = 1; i < 4; i++) {
+            try {
+                result = MHttpUtils.requestByGetMethod(url + "getContactInstability/?instanceId=" + instanceId);
+                if (!StringUtils.isEmpty(result) && result.length() > 6) {
+                    result = result.substring(0, 6);
+                }
+                break;
+            } catch (Exception e) {
+                logger.error("第"+i+"次计算联系人不稳定指数", e);
+            }
+        }
+        return result;
     }
 
 }

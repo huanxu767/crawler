@@ -11,6 +11,8 @@ public class ConfigProperties {
 
     private String localhostUrl;
 
+    private String pythonWebUrl;
+
     public void setVerificationCodePath(String verificationCodePath) {
         this.verificationCodePath = verificationCodePath;
     }
@@ -29,5 +31,13 @@ public class ConfigProperties {
 
     public String getLocalhostUrl(String imagePath) {
         return StringUtils.isEmpty(imagePath)?"":localhostUrl+imagePath;
+    }
+
+    public String getPythonWebUrl() {
+        return pythonWebUrl;
+    }
+
+    public void setPythonWebUrl(String pythonWebUrl) {
+        this.pythonWebUrl = pythonWebUrl;
     }
 }

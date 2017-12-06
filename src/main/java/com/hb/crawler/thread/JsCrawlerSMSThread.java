@@ -22,23 +22,15 @@ public class JsCrawlerSMSThread implements Runnable {
     @Override
     public void run() {
         JsBrowserInstance jsBrowserInstance = JsBrowserCache.get(instanceId);
-        boolean flag = false;
-        //第一次触发发送短信
-        try {
-            smsAuthorization(jsBrowserInstance.getWebClient());
-        } catch (Exception e) {
-            logger.error("第一次触发短信失败:"+instanceId,e);
-            flag = true;
-        }
-        //第一次触发失败 触发第二次
-        if(flag){
+        for (int i = 1; i < 4; i++) {
             try {
                 smsAuthorization(jsBrowserInstance.getWebClient());
+                break;
             } catch (Exception e) {
-                logger.error("第二次触发短信失败:"+instanceId,e);
-
+                logger.error("第"+i+"次触发短信失败:"+instanceId,e);
             }
         }
+        //第一次触发发送短信
         jsBrowserInstance.setHasSendMsg(true);
     }
 

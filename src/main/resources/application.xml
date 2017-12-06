@@ -97,6 +97,7 @@
     <bean id="configProperties" class="com.hb.crawler.property.ConfigProperties">
         <property name="verificationCodePath" value="${verificationCode.path}"></property>
         <property name="localhostUrl" value="${localhost.url}"></property>
+        <property name="pythonWebUrl" value="${python.web.url}"></property>
     </bean>
 
 </beans>
