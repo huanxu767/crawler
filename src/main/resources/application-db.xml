@@ -22,21 +22,22 @@
 	<!--<context:property-placeholder location="classpath:crawler.properties" />-->
 
 	 <!--************** DataSource: dbcp 数据库配置****************-->
-	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="${jdbc.driverClass}"></property>
-        <property name="url"   value="${jdbc.url}"></property>
-        <property name="username" value="${jdbc.user}"></property>
-        <property name="password" value="${jdbc.password}"></property>
-	</bean>
-
+	<!--<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">-->
+        <!--<property name="driverClassName" value="${jdbc.driverClass}"></property>-->
+        <!--<property name="url"   value="${jdbc.url}"></property>-->
+        <!--<property name="username" value="${jdbc.user}"></property>-->
+        <!--<property name="password" value="${jdbc.password}"></property>-->
+	<!--</bean>-->
 
     <!--JNDI数据源-->
-    <!--<jee:jndi-lookup id="dataSource" jndi-name="jdbc/mysql" proxy-interface="javax.sql.DataSource" lookup-on-startup="false"/>-->
+    <jee:jndi-lookup id="dataSource" jndi-name="jdbc/huabocrawler" proxy-interface="javax.sql.DataSource" lookup-on-startup="false"/>
 
      <!--事物管理-->
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
+
+
     <tx:annotation-driven transaction-manager="transactionManager" />
 
      <!--Spring和MyBatis完美整合，不需要mybatis的配置映射文件-->
