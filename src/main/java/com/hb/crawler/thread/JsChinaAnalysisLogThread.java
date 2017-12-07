@@ -365,14 +365,15 @@ public class JsChinaAnalysisLogThread implements Runnable {
         }
     }
 
-    private String contactInstability(String url, String instanceId) {
-        String result = "1";
+    private Double contactInstability(String url, String instanceId) {
+        Double result = 1.0;
         for (int i = 1; i < 4; i++) {
             try {
-                result = MHttpUtils.requestByGetMethod(url + "getContactInstability/?instanceId=" + instanceId);
-                if (!StringUtils.isEmpty(result) && result.length() > 6) {
-                    result = result.substring(0, 6);
+                String resultStr = MHttpUtils.requestByGetMethod(url + "getContactInstability/?instanceId=" + instanceId);
+                if (!StringUtils.isEmpty(resultStr) && resultStr.length() > 6) {
+                    resultStr = resultStr.substring(0, 6);
                 }
+                result = Double.parseDouble(resultStr);
                 break;
             } catch (Exception e) {
                 logger.error("第"+i+"次计算联系人不稳定指数", e);

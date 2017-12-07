@@ -18,7 +18,7 @@ public class JsChinaCrawlerReport {
     private int maxPayment;
     private int standardDeviation;
     private int emergencyContactDays;
-    private int totalContact;
+    private double totalContact;
     private String isGroup;
     private int joinGroupDays;
     private int onlineDays;
@@ -26,7 +26,7 @@ public class JsChinaCrawlerReport {
     private int accountBalance;
     private int continuousOfflineDays;
     private int offlineDaysTimes;
-    private String contactInstability;
+    private double contactInstability;
 
     private Date createTime;
 
@@ -102,11 +102,11 @@ public class JsChinaCrawlerReport {
         this.emergencyContactDays = emergencyContactDays;
     }
 
-    public int getTotalContact() {
+    public double getTotalContact() {
         return totalContact;
     }
 
-    public void setTotalContact(int totalContact) {
+    public void setTotalContact(double totalContact) {
         this.totalContact = totalContact;
     }
 
@@ -174,11 +174,11 @@ public class JsChinaCrawlerReport {
         this.createTime = createTime;
     }
 
-    public String getContactInstability() {
+    public double getContactInstability() {
         return contactInstability;
     }
 
-    public void setContactInstability(String contactInstability) {
+    public void setContactInstability(double contactInstability) {
         this.contactInstability = contactInstability;
     }
 
@@ -203,7 +203,6 @@ public class JsChinaCrawlerReport {
         return map;
     }
 
-
     @Override
     public String toString() {
         return "JsChinaCrawlerReport{" +
@@ -224,6 +223,7 @@ public class JsChinaCrawlerReport {
                 ", accountBalance=" + accountBalance +
                 ", continuousOfflineDays=" + continuousOfflineDays +
                 ", offlineDaysTimes=" + offlineDaysTimes +
+                ", contactInstability=" + contactInstability +
                 ", createTime=" + createTime +
                 '}';
     }

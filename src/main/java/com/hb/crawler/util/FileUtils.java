@@ -3,12 +3,9 @@ package com.hb.crawler.util;
 import com.gargoylesoftware.htmlunit.html.HtmlImage;
 import com.hb.crawler.exception.ResultException;
 import com.hb.crawler.pojo.ReturnCode;
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import java.awt.image.BufferedImage;
