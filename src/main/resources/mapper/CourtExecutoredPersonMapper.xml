@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hb.crawler.dao.CourtExecutorMapper">
+
+    <insert id="addCourtExecutor" parameterType="java.util.Map"  >
+        INSERT INTO common_court_executor (
+          loc,age, area_name, business_entity,card_num,
+          case_code,changefreq, court_name,disrupt_type_name,duty,
+          focus_number,gist_id,gist_unit,  iname, lastmod,
+           party_type_name,performance,performed_part,priority, publish_date,
+          publish_date_stamp,reg_date,sexy,sitelink, unperform_part
+        )
+        VALUES
+        (
+        #{loc}, #{age}, #{areaName}, #{businessEntity},#{cardNum},
+        #{caseCode},#{changefreq},#{courtName}, #{disruptTypeName}, #{duty},
+        #{focusNumber},#{gistId}, #{gistUnit},#{iname},#{lastmod},
+        #{partyTypeName},#{performance},#{performedPart},#{priority}, #{publishDate},
+        #{publishDateStamp}, #{regDate},#{sexy},#{sitelink},#{unperformPart}
+        )
+    </insert>
+
+</mapper>
