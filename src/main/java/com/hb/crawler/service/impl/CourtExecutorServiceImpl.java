@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * 抓取法院失信人
  */
-@Service
+@Service("courtExecutorService")
 public class CourtExecutorServiceImpl implements CourtExecutorService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -24,6 +24,9 @@ public class CourtExecutorServiceImpl implements CourtExecutorService {
     @Autowired
     private CourtExecutorMapper courtExecutorMapper;
 
+    public void test(){
+        System.out.println("test");
+    }
     public void spiderCourtExecutor() {
         int[] pageIndexArray = {0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000};
         String[] addressArray = {"%E5%8C%97%E4%BA%AC%20%E6%89%A7%E8%A1%8C%E4%BA%BA", "%E5%A4%A9%E6%B4%A5%20%E6%89%A7%E8%A1%8C%E4%BA%BA", "%E6%B2%B3%E5%8C%97%20%E6%89%A7%E8%A1%8C%E4%BA%BA",

@@ -47,4 +47,18 @@
     </filter-mapping>
 
 
+    <servlet>
+        <servlet-name>jobDispatcherServlet</servlet-name>
+        <servlet-class>
+            com.sncfc.scheduler.client.core.JobDispatcherServlet
+        </servlet-class>
+        <load-on-startup>3</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>jobDispatcherServlet</servlet-name>
+        <url-pattern>/jobDispatcher</url-pattern>
+    </servlet-mapping>
+
+
 </web-app>
