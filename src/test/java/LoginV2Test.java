@@ -82,7 +82,7 @@ public class LoginV2Test {
         System.out.println(t2-t1);
         String mobile = "13585119230";
         try {
-            String pwd = DesUtils.encrypt("456123");
+            String pwd = DesUtils.encrypt("789456");
             Map params = new HashMap();
             params.put("mobile",mobile);
             params.put("password",pwd);
