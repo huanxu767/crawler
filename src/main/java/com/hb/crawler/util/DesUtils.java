@@ -8,6 +8,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.SecureRandom;
 
 /**
@@ -23,16 +25,14 @@ public class DesUtils {
     private final static String defaultKey = "1234567890";
 
     public static void main(String[] args) throws Exception {
-        String data = "456123";
-        // System.err.println(encrypt(data, key));
-        // System.err.println(decrypt(encrypt(data, key), key));
+        String data = "789456";
         System.out.println(encrypt(data));
         System.out.println(decrypt(encrypt(data)));
 
     }
 
     /**
-     * 使用 默认key 加密
+     * 使用 默认key 加密 URL转码
      *
      * @return String
      * @author lifq
@@ -42,7 +42,7 @@ public class DesUtils {
         String strs = null;
         try {
             byte[] bt = encrypt(data.getBytes(ENCODE), defaultKey.getBytes(ENCODE));
-            strs = new BASE64Encoder().encode(bt);
+            strs = URLEncoder.encode(new BASE64Encoder().encode(bt));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -50,7 +50,7 @@ public class DesUtils {
     }
 
     /**
-     * 使用 默认key 解密
+     * 使用 默认key 解密 URL转码
      *
      * @return String
      * @author lifq
@@ -59,6 +59,7 @@ public class DesUtils {
     public static String decrypt(String data) throws IOException, Exception {
         if (data == null)
             return null;
+        data = URLDecoder.decode(data);
         BASE64Decoder decoder = new BASE64Decoder();
         byte[] buf = decoder.decodeBuffer(data);
         byte[] bt = decrypt(buf, defaultKey.getBytes(ENCODE));
@@ -74,6 +75,7 @@ public class DesUtils {
      * @throws Exception
      */
     public static String encrypt(String data, String key) throws Exception {
+        data = URLDecoder.decode(data);
         byte[] bt = encrypt(data.getBytes(ENCODE), defaultKey.getBytes(ENCODE));
         String strs = new BASE64Encoder().encode(bt);
         return strs;

@@ -31,6 +31,23 @@ public class JsChinaMobileCrawlerUtils {
     }
 
     /**
+     * 获取WebClient实例
+     *
+     * @param jsEnabledFlag 是否启动js编译器
+     * @return
+     */
+    public static final WebClient getWebClient(boolean jsEnabledFlag,String ip,int port) {
+        final WebClient wc = new WebClient(BrowserVersion.CHROME,ip,port);
+        wc.setJavaScriptTimeout(10000);
+        wc.getOptions().setJavaScriptEnabled(jsEnabledFlag); // 启用JS解释器，默认为true
+        wc.getOptions().setCssEnabled(false); // 禁用css支持
+        wc.getOptions().setThrowExceptionOnScriptError(false); // js运行错误时，是否抛出异常
+        wc.getOptions().setTimeout(10000); // 设置连接超时时间 ，这里是10S。如果为0，则无限期等待
+        wc.waitForBackgroundJavaScript(10000);
+        return wc;
+    }
+
+    /**
      * 时间间隔
      *
      * @param t1

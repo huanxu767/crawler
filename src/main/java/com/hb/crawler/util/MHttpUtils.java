@@ -57,6 +57,44 @@ public class MHttpUtils {
         return res;
     }
 
+    /**
+     * 通过GET方式发起http请求
+     */
+    public static boolean testProxyAvailabe(String url,String proxyHost,int proxyPort){
+        boolean flag = false;
+        //创建默认的httpClient实例
+        CloseableHttpClient httpClient = getHttpClient();
+        HttpHost proxy;
+        RequestConfig config;
+        // 依次是代理地址，代理端口号，协议类型
+        //需要代理
+        proxy = new HttpHost(proxyHost, proxyPort);
+        config = RequestConfig.custom().setProxy(proxy)
+                .setSocketTimeout(2000)
+                .setConnectTimeout(2000)
+                .setConnectionRequestTimeout(2000)
+                .build();
+        try {
+            //用get方法发送http请求
+            HttpGet get = new HttpGet(url);
+            get.setConfig(config);
+            CloseableHttpResponse httpResponse = null;
+            //发送get请求
+            httpResponse = httpClient.execute(get);
+            if(httpResponse.getStatusLine().getStatusCode() == 200){
+                flag = true;
+            }
+        }catch (Exception e){
+//            e.printStackTrace();
+        }finally{
+            try{
+                closeHttpClient(httpClient);
+            } catch (IOException e){
+                logger.error("访问异常",e);
+            }
+        }
+        return flag;
+    }
 
     /**
      * POST方式发起http请求
