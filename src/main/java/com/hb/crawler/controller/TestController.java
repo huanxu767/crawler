@@ -39,21 +39,19 @@ public class TestController {
      */
     private Long PRE_EXPIRE_TIME = 60 * 3L;
 
-    private String ip = "49.70.18.2";
-    private String ip2 = "49.70.18.2";
-
+//    110.19.189.55:6410 144.255.240.105:2315
+    private String ip = "144.255.240.105";
+    private String ip2 = "110.19.189.55";
     private boolean preLoginProxyFlag = false;
-    private boolean loginProxyFlag = false;
-    private int port = 3564;
-    private int port2 = 3564;
+    private boolean loginProxyFlag = true;
+    private int port = 2315;
+    private int port2 = 6410;
     private int loop = 1;
     @RequestMapping(value = "/xh")
-    public String xh(String name) {
-        String mobile = "13585119230";
-        String pwd = "789456";
+    public String xh(String name,String mobile,String pwd) {
         String instanceId = RandomGenerator.generateInstanceId();
         int i = 0;
-        while(i++<loop){
+        while(i++<1000){
             System.out.println(name + "==" +i);
             WebClient webClient;
             if(loginProxyFlag){
@@ -108,11 +106,15 @@ public class TestController {
                 System.out.println("需要验证码!!!!!!!!!!!");
             } else {
                 jsChinaCrawlerInstance.setNeedVerifyCode(JsChinaCrawlerInstance.NOT_NEED_VERIFY_CODE);
-                logger.debug(jsBrowserInstance.getInstanceId() + ":不需要需要验证码");
+                System.out.println("不需要需要验证码!!!!!!!!!!!");
+            }
+
+            for (Cookie cookie:webClient.getCookieManager().getCookies()) {
+                System.out.println(cookie.getName()+"="+cookie.getValue());
             }
             redisUtils.setSerializable(COOKIES + instanceId, webClient.getCookieManager(), PRE_EXPIRE_TIME);
         } catch (Exception e) {
-            logger.error("预登录接口出错,instanceId=" + jsBrowserInstance.getInstanceId(), e);
+           e.printStackTrace();
             throw new ResultException(ReturnCode.UNKNOWN);
         } finally {
             webClient.close();
