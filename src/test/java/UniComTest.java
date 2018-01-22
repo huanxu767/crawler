@@ -1,7 +1,4 @@
-import com.gargoylesoftware.htmlunit.CookieManager;
-import com.gargoylesoftware.htmlunit.ScriptResult;
-import com.gargoylesoftware.htmlunit.TextPage;
-import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.*;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.google.gson.Gson;
@@ -24,11 +21,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.util.StringUtils;
 
 import javax.swing.text.html.HTML;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 import static com.hb.crawler.util.MDateUtils.getCurrentYearDays;
-
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:application.xml","classpath:application-db.xml","classpath:application-redis.xml"})
@@ -41,23 +39,76 @@ public class UniComTest {
 
     @Test
     public void url() {
-        String url = "https://uac.10010.com/portal/Service/SendCkMSG?req_time="+System.currentTimeMillis()+"&mobile=18652090357";
-        System.out.println(url);
+//        String url = "https://uac.10010.com/portal/Service/SendCkMSG?req_time="+System.currentTimeMillis()+"&mobile=18652090357";
+//        System.out.println(url);
+        WebClient webClient = JsChinaMobileCrawlerUtils.getWebClient(false);
+
+        try {
+            webClient.getPage("https://uac.10010.com/oauth2/genqr?timestamp="+System.currentTimeMillis());
+            readCookies(webClient.getCookieManager());
+            UnexpectedPage unexpectedPage = webClient.getPage("https://uac.10010.com/portal/Service/CheckNeedVerify?callback=jQuery17209577406664329835_"+System.currentTimeMillis()+"&userName=18652090357&pwdType=01&_="+System.currentTimeMillis());
+            System.out.println(readStream(unexpectedPage.getInputStream()));
+            readCookies(webClient.getCookieManager());
+
+            UnexpectedPage unexpectedPage2 = webClient.getPage("https://uac.10010.com/portal/Service/CreateImage?t="+System.currentTimeMillis());
+//            System.out.println(readStream(unexpectedPage2.getInputStream()));
+            readCookies(webClient.getCookieManager());
+
+            HtmlPage htmlPage = webClient.getPage("https://uac.10010.com/portal/Service/SendCkMSG?callback=jQuery17209577406664329835_"+System.currentTimeMillis()+"&req_time="+System.currentTimeMillis()+"&mobile=18652090357&_="+System.currentTimeMillis());
+            System.out.println(htmlPage.asXml());
+            readCookies(webClient.getCookieManager());
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            webClient.close();
+        }
+
     }
+
+    /**
+     * 读取流
+     *
+     * @param inStream
+     * @return 字节数组
+     * @throws Exception
+     */
+    public static String readStream(InputStream inStream) throws Exception {
+        ByteArrayOutputStream outSteam = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len = -1;
+        while ((len = inStream.read(buffer)) != -1) {
+            outSteam.write(buffer, 0, len);
+        }
+        outSteam.close();
+        inStream.close();
+        return new String(outSteam.toByteArray());
+    }
+
     @Test
     public void sendMsg() {
-        String url = "https://uac.10010.com/portal/Service/SendCkMSG?req_time="+System.currentTimeMillis()+"&mobile=18652090357";
-        System.out.println(url);
         WebClient webClient = JsChinaMobileCrawlerUtils.getWebClient(true);
         try {
-            HtmlPage loginPage = webClient.getPage("https://uac.10010.com/portal/homeLogin");
+            HtmlPage htmlPage = webClient.getPage("https://uac.10010.com/portal/homeLogin");
+            String js ="$('#userName').focus().val('18652090357');loginCommon.checkNeedVerify();" +
+                    "$('#userPwd').focus().val('154326');";
+//            System.out.println(js);
+//            ScriptResult s1 =  htmlPage.executeJavaScript(js);
+//            synchronized (s1) {
+//                s1.wait(3000);
+//            }
+//
+//                                                                                           17208642436513735501
+            String check ="https://uac.10010.com/portal/Service/CheckNeedVerify?callback=jQuery17207942186095942099_1516588745587&userName=18652090357&pwdType=01&_=1516588753203";
+            String createImage = "https://uac.10010.com/portal/Service/CreateImage?t=";
+
             readCookies(webClient.getCookieManager());
-//            System.out.println(loginPage.asXml());
-            Thread.sleep(3000);
+            webClient.getPage(check + System.currentTimeMillis());
+
+            webClient.getPage(createImage + System.currentTimeMillis());
+//            ScriptResult s2 =  htmlPage.executeJavaScript(" $('#randomCKCode').click()");
             readCookies(webClient.getCookieManager());
-            loginPage.executeJavaScript("location="+url);
-            HtmlPage htmlPage = webClient.getPage(url);
-            System.out.println(htmlPage.asXml());
+            redisUtils.setSerializable(instanceId,webClient.getCookieManager(),30000);
         }catch (Exception e){
             e.printStackTrace();
         }finally {
@@ -69,36 +120,12 @@ public class UniComTest {
     public void login(){
 //        $('#userName').focus().val('18652090357');
 //        $('#userPwd').focus().val('789456');
+//        loginCommon.checkNeedVerify();
 //        $('#userCKDiv').show();
 //        $('#randomCode').click();
 //        $('#userCK').focus().val('');
 //        $('#login1').click();
 
-        String code ="912621";
-        WebClient webClient = JsChinaMobileCrawlerUtils.getWebClient(true);
-        try {
-            HtmlPage htmlPage = webClient.getPage("https://uac.10010.com/portal/homeLogin");
-            String js ="$('#userName').focus().val('18652090357');" +
-                    "$('#userPwd').focus().val('154326');" +
-                    "$('#userCKDiv').show();$('#userCK').val("+code+");" +
-                    "$('#login1').focus();$('#login1').click();";
-
-            System.out.println(js);
-            ScriptResult s = htmlPage.executeJavaScript(js);
-            try {
-                synchronized (s) {
-                    s.wait(3000);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            HtmlPage j = (HtmlPage)s.getNewPage();
-            System.out.println(j.asXml());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }finally {
-            webClient.close();
-        }
     }
 
     private static void  readCookies(CookieManager cookieManager){
