@@ -29,7 +29,7 @@ public class BaiduTest {
         //定位输入框元素
         WebElement password = driver.findElement(By.name("password"));
         //在输入框输入文本
-        password.sendKeys("a870b3251x5");
+        password.sendKeys("");
         //定位按钮元素
         WebElement btn = driver.findElement(By.id("TANGRAM__PSP_4__submit"));
         //点击按钮
