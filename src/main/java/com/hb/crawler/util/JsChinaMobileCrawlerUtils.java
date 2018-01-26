@@ -24,7 +24,7 @@ public class JsChinaMobileCrawlerUtils {
         wc.setJavaScriptTimeout(10000);
         wc.getOptions().setJavaScriptEnabled(jsEnabledFlag); // 启用JS解释器，默认为true
         wc.getOptions().setCssEnabled(true); // 禁用css支持
-        wc.getOptions().setDownloadImages(true);
+//        wc.getOptions().setDownloadImages(true);
         wc.getOptions().setThrowExceptionOnScriptError(false); // js运行错误时，是否抛出异常
         wc.getOptions().setTimeout(10000); // 设置连接超时时间 ，这里是10S。如果为0，则无限期等待
         wc.waitForBackgroundJavaScript(10000);

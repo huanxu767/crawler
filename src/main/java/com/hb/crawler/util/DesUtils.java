@@ -28,6 +28,7 @@ public class DesUtils {
         String data = "789456";
         System.out.println(encrypt(data));
         System.out.println(decrypt(encrypt(data)));
+        System.out.println(System.currentTimeMillis());
 
     }
 
