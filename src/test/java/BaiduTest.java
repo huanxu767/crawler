@@ -25,7 +25,7 @@ public class BaiduTest {
         //定位输入框元素
         WebElement txtbox = driver.findElement(By.name("userName"));
         //在输入框输入文本
-        txtbox.sendKeys("老上bd不好");
+        txtbox.sendKeys("");
         //定位输入框元素
         WebElement password = driver.findElement(By.name("password"));
         //在输入框输入文本
@@ -50,8 +50,8 @@ public class BaiduTest {
 //        https://console.bce.baidu.com/api/account/get_myaccount?locale=zh-cn&_=1516934858514
 
         String url = "https://login.bce.baidu.com/collaborator?account=f34188fc8247431da9215bd9a450352a";
-        String js = "$('input[name=userName]').val('老上bd不好');\n" +
-                "$('input[name=password]').val('a870b3251x5');\n" +
+        String js = "$('input[name=userName]').val('');\n" +
+                "$('input[name=password]').val('');\n" +
                 "$('input[type=submit]').click();";
 
         final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_52);
