@@ -43,7 +43,7 @@ public class TestController {
     private String ip = "144.255.240.105";
     private String ip2 = "110.19.189.55";
     private boolean preLoginProxyFlag = false;
-    private boolean loginProxyFlag = true;
+    private boolean loginProxyFlag = false;
     private int port = 2315;
     private int port2 = 6410;
     private int loop = 1;
@@ -204,7 +204,7 @@ public class TestController {
     }
 
 
-    /**
+    /**g
      * 判断是否需要验证码
      *
      * @param loginPage
