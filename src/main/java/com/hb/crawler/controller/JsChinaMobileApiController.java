@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
@@ -41,7 +42,7 @@ public class JsChinaMobileApiController {
      *
      * @return
      */
-    @RequestMapping(value = "preLogin")
+    @RequestMapping(value = "preLogin",method = RequestMethod.POST)
     public BaseResultBean preLogin(String mobile, String imei) {
         logger.info("预登录,mobile[{}]imei[{}]", mobile, imei);
         BaseResultBean bean = new BaseResultBean();
