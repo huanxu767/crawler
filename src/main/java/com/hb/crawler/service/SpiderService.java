@@ -30,4 +30,11 @@ public interface SpiderService {
      */
     Map login(String instanceId, String mobile, String password, String verificationCode);
 
+    /**
+     * 验证短信码
+     * @param test
+     * @param smsCode
+     * @return
+     */
+    Map verifySMSCode(String test, String smsCode);
 }

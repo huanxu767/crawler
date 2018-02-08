@@ -3,13 +3,18 @@ package com.hb.crawler.util;
 import com.hb.crawler.pojo.HTTPResponseInstance;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -21,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
+import java.util.List;
 
 public class MHttpUtils {
 
@@ -28,56 +34,70 @@ public class MHttpUtils {
 
     /**
      * get方式请求
+     *
      * @param url
      * @return
      * @throws IOException
      */
     public static HTTPResponseInstance request(String url) throws IOException {
-        return request(url,null);
+        return request(url, null);
     }
 
     /**
      * get方式请求并获取cookie
+     *
      * @param url
      * @param cookieStore
      * @return
      * @throws IOException
      */
     public static HTTPResponseInstance request(String url, CookieStore cookieStore) throws IOException {
-        return request(url,cookieStore,null,true);
+        return request(url, cookieStore, null, true, true);
     }
 
     /**
      * get方式请求并获取cookie
+     *
+     * @param url
+     * @param cookieStore
+     * @param header
+     * @return
+     * @throws IOException
+     */
+    public static HTTPResponseInstance request(String url, CookieStore cookieStore, Header header) throws IOException {
+        return request(url, cookieStore, null, true, true);
+    }
+
+    /**
+     * get方式请求并获取cookie
+     *
      * @param url
      * @param cookieStore
      * @return
      * @throws IOException
      */
-    public static HTTPResponseInstance request(String url, CookieStore cookieStore,String referer,boolean flag) throws IOException {
+    public static HTTPResponseInstance request(String url, CookieStore cookieStore, Header header, boolean flag, boolean judgeStatusFlag) throws IOException {
         HTTPResponseInstance httpResponseInstance = new HTTPResponseInstance();
         CloseableHttpClient httpclient = HttpClients.createDefault();
 
         try {
             HttpClientContext context = HttpClientContext.create();
-            if(cookieStore != null){
+            if (cookieStore != null) {
                 context.setCookieStore(cookieStore);
             }
             RequestConfig config = RequestConfig.custom()
-                    .setSocketTimeout(3000)
-                    .setConnectTimeout(3000)
-                    .setConnectionRequestTimeout(3000)
+                    .setSocketTimeout(5000)
+                    .setConnectTimeout(5000)
+                    .setConnectionRequestTimeout(5000)
+                    .setRedirectsEnabled(flag)
 //                    .setProxy(new HttpHost("myotherproxy", 8080))
                     .build();
 
-//            request.setAdditionalHeader("Referer", "");
-
-
             HttpGet httpget = new HttpGet(url);
             httpget.setConfig(config);
-            httpget.setHeader("Referer", referer);
-            ResponseHandler<String> responseHandler = new MyResponseHandler();
-            String responseBody = httpclient.execute(httpget, responseHandler,context);
+            httpget.setHeader(header);
+            ResponseHandler<String> responseHandler = judgeStatusFlag ? new MyResponseHandler() : new ResponseHandlerWithoutJudgeStatus();
+            String responseBody = httpclient.execute(httpget, responseHandler, context);
             httpResponseInstance.setResponseBody(responseBody);
             httpResponseInstance.setCookieStore(context.getCookieStore());
             return httpResponseInstance;
@@ -88,12 +108,13 @@ public class MHttpUtils {
 
     /**
      * 获取验证码 BASE64转码
+     *
      * @param imgUrl
      * @param cookieStore
      * @return
      * @throws IOException
      */
-    public static HTTPResponseInstance getImage(String imgUrl,CookieStore cookieStore) throws IOException{
+    public static HTTPResponseInstance getImage(String imgUrl, CookieStore cookieStore) throws IOException {
 
         HTTPResponseInstance httpResponseInstance = new HTTPResponseInstance();
         CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -102,7 +123,7 @@ public class MHttpUtils {
             context.setCookieStore(cookieStore);
             HttpGet httpget = new HttpGet(imgUrl);
             ResponseHandler<byte[]> responseHandler = new ImageResponseHandler();
-            byte[] responseBody = httpclient.execute(httpget, responseHandler,context);
+            byte[] responseBody = httpclient.execute(httpget, responseHandler, context);
             httpResponseInstance.setCookieStore(context.getCookieStore());
             httpResponseInstance.setResponseBody(Base64.getEncoder().encodeToString(responseBody));
             return httpResponseInstance;
@@ -110,6 +131,7 @@ public class MHttpUtils {
             httpclient.close();
         }
     }
+
     /**
      * 通过GET方式发起http请求
      */
@@ -134,7 +156,7 @@ public class MHttpUtils {
                 }
 
             };
-            String responseBody = httpclient.execute(httpget, responseHandler,context);
+            String responseBody = httpclient.execute(httpget, responseHandler, context);
             return responseBody;
         } finally {
             httpclient.close();
@@ -145,7 +167,7 @@ public class MHttpUtils {
     /**
      * 通过GET方式发起http请求
      */
-    public static boolean requestByGetMethod(String url,String proxyHost,int proxyPort){
+    public static boolean requestByGetMethod(String url, String proxyHost, int proxyPort) {
         boolean flag = false;
 //        //创建默认的httpClient实例
 //        CloseableHttpClient httpClient = getHttpClient();
@@ -184,7 +206,7 @@ public class MHttpUtils {
     /**
      * POST方式发起http请求
      */
-    public static String requestByPostMethod(String url,String js,String type,String proxyHost,int proxyPort,boolean isProxyFlag){
+    public static String requestByPostMethod(String url, String js, String type, String proxyHost, int proxyPort, boolean isProxyFlag) {
 //        System.out.println(url);
 //        String result = "{}";
 //        String appendScript = "var missionId = " + type + ";";
@@ -252,25 +274,54 @@ public class MHttpUtils {
         return null;
     }
 
+    /**
+     * post请求
+     * @param url
+     * @param cookieStore
+     * @param headers
+     * @param nameValuePairList
+     * @return
+     * @throws IOException
+     */
+    public static HTTPResponseInstance requestByPostMethod(String url, CookieStore cookieStore, Header[] headers, List<NameValuePair> nameValuePairList) throws IOException {
+        HTTPResponseInstance httpResponseInstance = new HTTPResponseInstance();
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        try {
+            HttpClientContext context = HttpClientContext.create();
+            context.setCookieStore(cookieStore);
+            HttpPost httppost = new HttpPost(url);
+            httppost.setHeaders(headers);
+            httppost.setEntity(new UrlEncodedFormEntity(nameValuePairList));
 
-}
-
-
-class MyResponseHandler implements ResponseHandler{
-
-    @Override
-    public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
-            int status = response.getStatusLine().getStatusCode();
-            if (status >= 200 && status < 300) {
-                HttpEntity entity = response.getEntity();
-                return entity != null ? EntityUtils.toString(entity) : null;
-            } else {
-                throw new ClientProtocolException("Unexpected response status: " + status);
+            CloseableHttpResponse httpResponse = httpclient.execute(httppost, context);
+            HttpEntity entity = httpResponse.getEntity();
+            if (null != entity) {
+                httpResponseInstance.setCookieStore(context.getCookieStore());
+                httpResponseInstance.setResponseBody(EntityUtils.toString(entity));
             }
+            return httpResponseInstance;
+        } finally {
+            httpclient.close();
+        }
     }
 }
 
-class ImageResponseHandler implements ResponseHandler{
+
+class MyResponseHandler implements ResponseHandler {
+
+    @Override
+    public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+        int status = response.getStatusLine().getStatusCode();
+        if (status >= 200 && status < 300) {
+            HttpEntity entity = response.getEntity();
+            return entity != null ? EntityUtils.toString(entity) : null;
+        } else {
+            throw new ClientProtocolException("Unexpected response status: " + status);
+        }
+    }
+}
+
+class ImageResponseHandler implements ResponseHandler {
 
     @Override
     public byte[] handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
@@ -278,11 +329,22 @@ class ImageResponseHandler implements ResponseHandler{
         try {
             in = response.getEntity().getContent();
             byte[] imageByte = IOUtils.toByteArray(in);
+            FileUtils.writeByteArrayToFile(new File("D:\\22.png"), imageByte);
             return imageByte;
-        }finally {
-            if( in != null){
+        } finally {
+            if (in != null) {
                 in.close();
             }
         }
     }
 }
+
+class ResponseHandlerWithoutJudgeStatus implements ResponseHandler {
+
+    @Override
+    public String handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+        HttpEntity entity = response.getEntity();
+        return entity != null ? EntityUtils.toString(entity) : null;
+    }
+}
+
