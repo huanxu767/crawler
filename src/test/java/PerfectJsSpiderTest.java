@@ -27,8 +27,14 @@ public class PerfectJsSpiderTest {
 
     @Test
     public void login(){
-        Map responseMap = spiderService.login("264593b9074547dbb00e5c3fe3bf2b76",
-                "13585119230","789456","r2un");
+        Map responseMap = spiderService.login("test",
+                "13585119230","789456","5xug");
+        System.out.println(responseMap);
+    }
+
+    @Test
+    public void verifySMSCode(){
+        Map responseMap = spiderService.verifySMSCode("test","733121");
         System.out.println(responseMap);
     }
 
